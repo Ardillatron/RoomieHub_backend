@@ -1,0 +1,14 @@
+# Copia este archivo como local.properties (ignorado por git) y pon tus contraseñas.
+# Los roles y la base se crean con db/roles.sql.
+DB_PASSWORD=
+DB_OWNER_PASSWORD=
+JWT_SECRET=
+# Client IDs de OAuth de Google (Android, iOS), separados por comas
+GOOGLE_CLIENT_IDS=
+# Secreto del disparador externo de los procesos programados
+JOBS_SECRET=
+# API environment variable de Cloudinary: cloudinary://<api_key>:<api_secret>@<cloud_name>
+CLOUDINARY_URL=
+# Ruta al JSON de la cuenta de servicio de Firebase (Configuración del proyecto → Cuentas de servicio →
+# Generar nueva clave privada). Guárdalo fuera del repo: es una llave privada.
+FIREBASE_CREDENTIALS=
