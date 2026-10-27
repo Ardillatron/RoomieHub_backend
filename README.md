@@ -3,7 +3,7 @@
 =
 
 
-Regla 1: La capacidad de una vivienda está limitada a un máximo de 6 personas.
+Regla 1: La capacidad de una vivienda está limitada a un máximo de 6 personas
 
 
 Por qué es negocio: Es una política inquebrantable del sistema de convivencia que debe cumplirse obligatoriamente independientemente de si se utiliza PostgreSQL, un archivo de texto.
