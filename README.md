@@ -129,4 +129,5 @@ Si una tecnología queda obsoleta en el futuro, el núcleo del negocio permanece
 Los cambios tecnológicos se limitan estrictamente a la capa más reduciendo el riesgo de que una actualización 
 rompa las reglas contables o de convivencia de las viviendas compartidas.
 
-<img width="581" height="783" alt="Captura de pantalla 2026-10-15 004942" src="https://github.com/user-attachments/assets/32dd6d1f-389f-438e-9d53-51660f177028" />
+<img width="2746" height="4190" alt="Christmas Shopping Decision Tree-2026-10-15-043011" src="https://github.com/user-attachments/assets/8e016cf7-168b-430e-a485-5f196470c3da" />
+

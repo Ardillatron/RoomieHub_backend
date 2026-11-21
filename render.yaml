@@ -2,6 +2,7 @@ services:
   - type: web
     name: roomiehub-api
     runtime: docker
+    branch: main
     plan: free
     healthCheckPath: /actuator/health
     envVars:
