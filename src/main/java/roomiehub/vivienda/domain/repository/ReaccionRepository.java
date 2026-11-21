@@ -9,13 +9,13 @@ public interface ReaccionRepository {
 
     record Conteo(long likes, long dislikes) {}
 
-    /** RN-29: una por persona y nota; reaccionar otra vez cambia el tipo. */
+    // Una por persona y nota y reaccionar otra vez cambia el tipo
     void reaccionar(long notaId, long salaId, long usuarioId, TipoReaccion tipo);
 
     void quitar(long notaId, long usuarioId);
 
     Map<Long, Conteo> conteos(Collection<Long> notaIds);
 
-    /** notaId → la reacción de ese usuario, solo para las notas donde reaccionó. */
+    // Por cada nota la reaccion de ese usuario solo donde reacciono
     Map<Long, TipoReaccion> deUsuario(Collection<Long> notaIds, long usuarioId);
 }

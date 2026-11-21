@@ -39,7 +39,7 @@ public final class Usuario {
                 Objects.requireNonNull(googleSub, "googleSub"), nombre, fotoUrl, null);
     }
 
-    /** Correo sin espacios y en minúsculas: así se guarda y así se busca. */
+    // Correo sin espacios y en minusculas para guardar y buscar
     public static String normalizarCorreo(String email) {
         if (email == null || email.isBlank()) {
             throw new DatoInvalidoException("El correo es obligatorio");
@@ -47,16 +47,14 @@ public final class Usuario {
         return email.trim().toLowerCase(Locale.ROOT);
     }
 
-    /**
-     * Una cuenta de correo que después entra con Google con el mismo correo verificado. El registro con correo
-     * nunca comprobó el correo, así que la contraseña pudo ponerla otra persona: deja de servir.
-     */
+    /* Una cuenta de correo que luego entra con Google con el mismo correo verificado
+       el registro nunca verifico el correo y la contraseña deja de servir */
     public void vincularGoogle(String sub) {
         this.googleSub = Objects.requireNonNull(sub, "sub");
         this.passwordHash = null;
     }
 
-    /** RN-37: se borran los datos personales; deudas, puntos y mensajes siguen apuntando a este id. */
+    // Se borran los datos personales y deudas puntos y mensajes siguen con este id
     public void anonimizar(Instant ahora) {
         email = null;
         passwordHash = null;

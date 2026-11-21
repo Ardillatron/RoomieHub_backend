@@ -23,7 +23,7 @@ import roomiehub.vivienda.domain.model.finanzas.Moneda;
 import roomiehub.vivienda.domain.model.sala.Membresia;
 import roomiehub.vivienda.domain.model.sala.Rol;
 
-/** RN-06, RN-08, RN-22 y RN-37: las piezas de dominio que usa la salida de un miembro. */
+// Las piezas de dominio que usa la salida de un miembro
 class SalidaDominioTest {
 
     static Membresia miembro(long id, String unidoEn, boolean activo) {
@@ -34,7 +34,7 @@ class SalidaDominioTest {
     void elSucesorEsElMiembroActivoMasAntiguo() {
         List<Membresia> candidatos = List.of(
                 miembro(1, "2026-03-01T00:00:00Z", true),
-                miembro(2, "2026-01-01T00:00:00Z", false), // más antiguo pero inactivo
+                miembro(2, "2026-01-01T00:00:00Z", false), // mas antiguo pero inactivo
                 miembro(3, "2026-02-01T00:00:00Z", true),
                 miembro(4, "2026-02-01T00:00:00Z", true));
         assertEquals(3, SucesionDeAdministrador.sucesor(candidatos).id(), "empate de antigüedad: id menor");
@@ -48,7 +48,7 @@ class SalidaDominioTest {
         List<Deuda> nuevas = CalculadoraDeReparto.repartirDeuda(original, List.of(2L, 3L, 4L), 1);
 
         assertEquals(EstadoDeuda.REPARTIDA, original.estado());
-        // 3334 centavos entre 3 = 1111 y sobra 1; en el periodo 1 lo recibe la posición 1
+        // 3334 centavos entre 3 da 1111 y sobra 1 que recibe la posicion 1 en el periodo 1
         assertEquals(List.of("11.11", "11.12", "11.11"),
                 nuevas.stream().map(d -> d.monto().monto().toPlainString()).toList());
         assertEquals(List.of(2L, 3L, 4L), nuevas.stream().map(Deuda::deudorId).toList());

@@ -17,12 +17,12 @@ import roomiehub.vivienda.domain.exception.ConflictoDeEstadoException;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.exception.RecursoNoEncontradoException;
 
-/** Las tres validaciones de la sección 8 y qué responde cada falla, con un procesador falso. */
+// Las tres revisiones de la sincronizacion y que responde cada falla con un procesador falso
 class SincronizarAccionesOfflineTest {
 
     static final long SALA = 1, EXPULSADO_DE = 2;
 
-    /** El texto de la nota decide qué le pasa: "eliminado", "regla", "falla" o se aplica. */
+    // El texto de la nota decide que pasa eliminado regla falla o se aplica
     static final class ProcesadorFalso extends ProcesadorDeAccion {
         final Set<UUID> procesadas;
         final List<UUID> aplicadas = new ArrayList<>();

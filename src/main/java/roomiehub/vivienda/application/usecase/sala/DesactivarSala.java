@@ -12,7 +12,7 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/** CU-08 y RN-09: solo lectura durante 15 días; después la borra CU-29. */
+// CU-08 solo lectura por 15 dias y despues la borra CU-29
 public class DesactivarSala {
 
     private final SalaRepository salas;

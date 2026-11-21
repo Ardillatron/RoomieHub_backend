@@ -8,12 +8,12 @@ import java.util.UUID;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.exception.RecursoNoEncontradoException;
 
-/** RN-28 a RN-31: una nota del tablón. */
+// Una nota del tablon
 public final class Nota {
 
-    /** RN-31: como máximo 30 días fijada. */
+    // Maximo 30 dias fijada
     public static final Duration FIJADA_MAXIMO = Duration.ofDays(30);
-    /** RN-31: como máximo 3 notas fijadas a la vez por sala. */
+    // Maximo 3 notas fijadas a la vez por sala
     public static final int MAXIMO_FIJADAS = 3;
 
     private final Long id;
@@ -45,12 +45,13 @@ public final class Nota {
         }
     }
 
-    /** CU-09. @param clientUuid el de la app (RN-35): reintentar la misma acción no duplica la nota */
+    // CU-09 clientUuid es el de la app y reintentar no duplica la nota
     public static Nota nueva(long salaId, long autorId, String texto, String imagenId, UUID clientUuid, Instant ahora) {
         return new Nota(null, salaId, autorId, texto, imagenId, ahora, clientUuid, null, false);
     }
 
-    /** RN-31: fijada hasta {@code hasta}, que no puede pasar de 30 días. El tope de 3 lo valida el caso de uso. */
+    /* Fijada hasta la fecha dada que no puede pasar de 30 dias
+       el tope de 3 lo revisa el caso de uso */
     public void fijar(Instant hasta, Instant ahora) {
         exigirVisible();
         if (!hasta.isAfter(ahora) || hasta.isAfter(ahora.plus(FIJADA_MAXIMO))) {
@@ -63,21 +64,21 @@ public final class Nota {
         fijadaHasta = null;
     }
 
-    /** CU-13: borrado lógico; deja de mostrarse. */
+    // CU-13 borrado logico y deja de mostrarse
     public void eliminar() {
         exigirVisible();
         eliminada = true;
         fijadaHasta = null;
     }
 
-    /** Una nota eliminada responde como inexistente. */
+    // Una nota borrada responde como si no existiera
     public void exigirVisible() {
         if (eliminada) {
             throw new RecursoNoEncontradoException("Nota no encontrada");
         }
     }
 
-    /** CU-30: el plazo vencido deja de contar aunque el proceso aún no la haya desfijado. */
+    // CU-30 el plazo vencido deja de contar aunque el proceso no la haya desfijado
     public boolean estaFijada(Instant ahora) {
         return fijadaHasta != null && fijadaHasta.isAfter(ahora);
     }

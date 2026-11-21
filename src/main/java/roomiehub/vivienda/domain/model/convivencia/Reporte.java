@@ -6,7 +6,7 @@ import java.util.Objects;
 import roomiehub.vivienda.domain.exception.ConflictoDeEstadoException;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 
-/** RN-29: el reporte de una nota o de un mensaje del chat; lo resuelve el Administrador. */
+// El reporte de una nota o mensaje y lo resuelve el admin
 public final class Reporte {
 
     private final Long id;
@@ -40,7 +40,7 @@ public final class Reporte {
         return new Reporte(null, salaId, notaId, null, usuarioId, motivo, ahora, false);
     }
 
-    /** CU-32. */
+    // CU-32
     public static Reporte deMensaje(long salaId, long mensajeId, long usuarioId, String motivo, Instant ahora) {
         return new Reporte(null, salaId, null, mensajeId, usuarioId, motivo, ahora, false);
     }

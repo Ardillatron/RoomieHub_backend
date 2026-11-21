@@ -83,7 +83,7 @@ import roomiehub.vivienda.domain.repository.TareaRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 import roomiehub.vivienda.domain.service.AsignadorDeTareas;
 
-/** Raíz de composición: los casos de uso no llevan @Service, se registran aquí. */
+// Aqui se registran los casos de uso porque no llevan @Service
 @Configuration
 public class UseCaseConfig {
 
@@ -148,7 +148,7 @@ public class UseCaseConfig {
         return new RegistrarDispositivo(dispositivos, reloj);
     }
 
-    // ─── Salas ───
+    // Salas
 
     @Bean
     SalidaDeMiembro salidaDeMiembro(SalaRepository salas, MembresiaRepository membresias, TareaRepository tareas,
@@ -212,11 +212,11 @@ public class UseCaseConfig {
         return new BorrarSalaVencida(salas, almacenamiento);
     }
 
-    // ─── Tareas ───
+    // Tareas
 
     @Bean
     AsignadorDeTareas asignadorDeTareas() {
-        return new AsignadorDeTareas(new SecureRandom()); // los empates se sortean (sección 6)
+        return new AsignadorDeTareas(new SecureRandom()); // los empates se sortean
     }
 
     @Bean
@@ -268,7 +268,7 @@ public class UseCaseConfig {
         return new PenalizarVencidas(salas, asignaciones, puntos);
     }
 
-    // ─── Finanzas ───
+    // Finanzas
 
     @Bean
     GeneradorDeDeudas generadorDeDeudas(GastoRepository gastos, DeudaRepository deudas) {
@@ -322,7 +322,7 @@ public class UseCaseConfig {
         return new EnviarRecordatorios(salas, deudas, gastos, notificador);
     }
 
-    // ─── Convivencia: tablón ───
+    // Convivencia tablon
 
     @Bean
     CrearNota crearNota(AccesoASala acceso, NotaRepository notas, AlmacenamientoImagenesPort almacenamiento,
@@ -369,7 +369,7 @@ public class UseCaseConfig {
         return new ModerarReportes(acceso, reportes, notas, mensajes, usuarios);
     }
 
-    // ─── Convivencia: chat ───
+    // Convivencia chat
 
     @Bean
     VistasDeMensajes vistasDeMensajes(UsuarioRepository usuarios, NotaRepository notas,
@@ -400,7 +400,7 @@ public class UseCaseConfig {
         return new ReportarMensaje(acceso, mensajes, reportes, notificador, reloj);
     }
 
-    // ─── Sincronización offline ───
+    // Sincronizacion offline
 
     @Bean
     ProcesadorDeAccion procesadorDeAccion(MembresiaRepository membresias, AccionProcesadaRepository procesadas,

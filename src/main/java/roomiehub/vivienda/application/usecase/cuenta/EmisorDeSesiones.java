@@ -15,7 +15,7 @@ import roomiehub.vivienda.domain.model.cuenta.RefreshToken;
 import roomiehub.vivienda.domain.model.cuenta.Usuario;
 import roomiehub.vivienda.domain.repository.RefreshTokenRepository;
 
-/** Sección 9: JWT de acceso de 15 minutos y refresh token de 30 días, guardado como hash. */
+// JWT de acceso de 15 minutos y refresh token de 30 dias guardado como hash
 public class EmisorDeSesiones {
 
     static final Duration DURACION_ACCESO = Duration.ofMinutes(15);
@@ -44,13 +44,13 @@ public class EmisorDeSesiones {
         return new Sesion(tokens.emitirAcceso(usuario.id(), ahora, expiraAcceso), expiraAcceso, refresh, usuario);
     }
 
-    /** SHA-256 basta: el token ya tiene 256 bits aleatorios, no es una contraseña adivinable. */
+    // SHA 256 basta porque el token ya es aleatorio y no es una contraseña
     static String hash(String token) {
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(token.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e); // SHA-256 existe en toda JVM
+            throw new IllegalStateException(e); // toda JVM tiene SHA 256
         }
     }
 

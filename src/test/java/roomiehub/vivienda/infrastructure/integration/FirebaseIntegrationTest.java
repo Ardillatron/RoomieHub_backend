@@ -15,10 +15,8 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import roomiehub.vivienda.domain.repository.DispositivoRepository;
 
-/**
- * Contra el proyecto real de Firebase: {@code ./mvnw test -Dfirebase=true -Dtest=FirebaseIntegrationTest}.
- * Lee FIREBASE_CREDENTIALS de local.properties.
- */
+/* Contra el proyecto real de Firebase con mvnw test y firebase en true
+   lee FIREBASE_CREDENTIALS de local properties */
 @EnabledIfSystemProperty(named = "firebase", matches = "true")
 class FirebaseIntegrationTest {
 
@@ -43,7 +41,7 @@ class FirebaseIntegrationTest {
         assertNotNull(acceso, "la cuenta de servicio se cambia por un token de acceso");
         assertEquals(acceso, notificador.accesoFcm(), "y se reusa mientras no vence");
 
-        // Un token con forma válida que nunca existió: FCM responde con error y nada truena.
+        // Un token que parece valido pero nunca existio y FCM responde error sin romper nada
         notificador.enviarA("token-inventado", "Prueba", "Hola", acceso);
     }
 }

@@ -1,6 +1,6 @@
 package roomiehub.vivienda.domain.exception;
 
-/** No existe, o RLS no deja verlo: para no revelar salas ajenas, ambos casos responden igual. */
+// No existe o RLS no deja verlo y los dos casos responden igual
 public class RecursoNoEncontradoException extends DomainException {
 
     public RecursoNoEncontradoException(String message) {

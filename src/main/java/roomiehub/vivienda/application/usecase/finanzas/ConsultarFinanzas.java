@@ -16,7 +16,7 @@ import roomiehub.vivienda.domain.repository.DeudaRepository;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** Lo que cualquier miembro ve de las finanzas de su sala. */
+// Lo que cualquier miembro ve de las finanzas de su sala
 public class ConsultarFinanzas {
 
     public record GastoConParticipantes(GastoCompartido gasto, List<Long> participantes) {}
@@ -36,7 +36,7 @@ public class ConsultarFinanzas {
         this.usuarios = usuarios;
     }
 
-    /** RN-25: los eliminados ya no se muestran. */
+    // Los borrados ya no se muestran
     @Transactional(readOnly = true)
     public List<GastoConParticipantes> gastos(long usuarioId, long salaId) {
         acceso.exigirMiembro(salaId, usuarioId);
@@ -45,7 +45,7 @@ public class ConsultarFinanzas {
                 .toList();
     }
 
-    /** Del periodo más reciente al más viejo. Las de gastos eliminados siguen visibles: son historial. */
+    // Del periodo mas nuevo al mas viejo y las de gastos borrados siguen como historial
     @Transactional(readOnly = true)
     public List<DeudaConNombres> deudas(long usuarioId, long salaId, EstadoDeuda estado) {
         acceso.exigirMiembro(salaId, usuarioId);

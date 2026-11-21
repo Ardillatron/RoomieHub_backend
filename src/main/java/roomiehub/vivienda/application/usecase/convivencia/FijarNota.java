@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.exception.ConflictoDeEstadoException;
 import roomiehub.vivienda.domain.model.convivencia.Nota;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 
-/** CU-12: RN-31. Solo el Administrador, hasta 30 días y como máximo 3 fijadas a la vez. */
+// CU-12 solo el admin fija hasta 30 dias y maximo 3 a la vez
 public class FijarNota {
 
     private final AccesoASala acceso;
@@ -28,7 +28,7 @@ public class FijarNota {
         Nota nota = ReaccionarNota.notaVisible(notas, notaId);
         acceso.exigirAdministradorDeSalaActiva(nota.salaId(), adminId);
         Instant ahora = reloj.instant();
-        // Cambiar el plazo de una ya fijada no cuenta como una fijada más.
+        // Cambiar el plazo de una ya fijada no cuenta como otra
         long otrasFijadas = notas.fijadasDeSala(nota.salaId(), ahora).stream()
                 .filter(n -> !n.id().equals(notaId))
                 .count();

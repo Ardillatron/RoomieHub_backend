@@ -3,8 +3,8 @@ package roomiehub.vivienda;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-// Vive en la raíz y no en infrastructure/config para que el escaneo de componentes,
-// entidades JPA y repositorios cubra todas las capas sin configuración extra.
+/* Vive en la raiz para que el escaneo de componentes entidades y repositorios
+   cubra todas las capas sin configuracion extra */
 @SpringBootApplication
 public class ViviendaApplication {
 

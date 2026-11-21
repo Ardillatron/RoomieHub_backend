@@ -12,7 +12,7 @@ import roomiehub.vivienda.domain.model.tareas.Tarea;
 import roomiehub.vivienda.domain.model.tareas.ValorTarea;
 import roomiehub.vivienda.domain.repository.TareaRepository;
 
-/** CU-16: RN-11 y RN-12 (los cambios de valor y de frecuencia solo cuentan para lo que sigue). */
+// CU-16 edita una tarea y los cambios solo cuentan para lo que sigue
 public class EditarTarea {
 
     private final AccesoASala acceso;

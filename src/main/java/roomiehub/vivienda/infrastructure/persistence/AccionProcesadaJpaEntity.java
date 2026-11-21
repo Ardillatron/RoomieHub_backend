@@ -26,7 +26,7 @@ public class AccionProcesadaJpaEntity {
     @Column(name = "sala_id", nullable = false)
     private Long salaId;
 
-    /** Lo pone PostgreSQL (DEFAULT now()). */
+    // Lo pone PostgreSQL con DEFAULT now
     @Column(name = "procesada_en", insertable = false, updatable = false)
     private Instant procesadaEn;
 }

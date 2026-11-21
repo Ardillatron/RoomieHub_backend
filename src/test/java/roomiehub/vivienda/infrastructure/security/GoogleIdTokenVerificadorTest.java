@@ -24,7 +24,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import roomiehub.vivienda.application.port.VerificadorGooglePort.IdentidadGoogle;
 import roomiehub.vivienda.domain.exception.CredencialesInvalidasException;
 
-/** Las mismas validaciones que con Google, pero con una llave RSA local en lugar de las de Google. */
+// Las mismas validaciones que con Google pero con una llave RSA local
 class GoogleIdTokenVerificadorTest {
 
     static final String CLIENT_ID = "app-android.apps.googleusercontent.com";

@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.jayway.jsonpath.JsonPath;
 
-/** Flujo HTTP completo contra PostgreSQL real: {@code ./mvnw test -Ddb=true} */
+// Flujo HTTP completo contra PostgreSQL real con mvnw test y db en true
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -62,13 +62,13 @@ class AuthIntegrationTest {
     void elReusoDeUnRefreshQuedaRevocadoAunqueLaPeticionFalle() throws Exception {
         String original = leer(registrar(correo), "$.refreshToken");
         String rotado = leer(refresh(original).andExpect(status().isOk()), "$.refreshToken");
-        // Fuera del margen de reintento: la rotación pasó hace un minuto
+        // Fuera del margen de reintento porque el cambio fue hace un minuto
         jdbc.update("""
                 UPDATE refresh_tokens SET revocado_en = now() - interval '1 minute'
                 WHERE revocado_en IS NOT NULL AND usuario_id = (SELECT id FROM usuarios WHERE email = ?)""", correo);
 
         refresh(original).andExpect(status().isUnauthorized());
-        // Si la transacción hubiera hecho rollback, el token rotado seguiría sirviendo.
+        // Si la transaccion hubiera hecho rollback el token viejo seguiria sirviendo
         refresh(rotado).andExpect(status().isUnauthorized());
     }
 
@@ -95,11 +95,11 @@ class AuthIntegrationTest {
         for (int i = 0; i < 5; i++) {
             json(post("/auth/login"), mala).andExpect(status().isUnauthorized());
         }
-        // Ni la contraseña correcta entra mientras dura el bloqueo
+        // Ni con la contraseña correcta entra mientras dura el bloqueo
         json(post("/auth/login"), "{\"email\":\"%s\",\"contrasena\":\"secreta123\"}".formatted(correo))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(header().exists("Retry-After"));
-        // Desde otra IP la dueña sí entra: un tercero no puede dejarla fuera de su cuenta
+        // Desde otra IP la dueña si entra y otro no puede dejarla fuera de su cuenta
         mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"%s\",\"contrasena\":\"secreta123\"}".formatted(correo))
                         .with(r -> { r.setRemoteAddr("192.168.77.1"); return r; }))
@@ -116,7 +116,7 @@ class AuthIntegrationTest {
                 .andExpect(status().isUnauthorized()); // fuera de /auth no aplica
     }
 
-    // Una IP distinta por test, para que el límite por IP de un test no afecte a los demás.
+    // Una IP distinta por test para que el limite de un test no afecte a los demas
     final String ip = "10.%d.%d.%d".formatted((int) (Math.random() * 250), (int) (Math.random() * 250),
             (int) (Math.random() * 250));
 

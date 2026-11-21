@@ -3,7 +3,7 @@ package roomiehub.vivienda.domain.model.finanzas;
 import java.time.Period;
 import java.util.Optional;
 
-/** RN-39: frecuencias de un gasto. UNICA genera sus deudas una sola vez, en su fecha de inicio. */
+// Frecuencias de un gasto y UNICA genera sus deudas una vez en su fecha de inicio
 public enum FrecuenciaGasto {
     UNICA(null),
     SEMANAL(Period.ofWeeks(1)),
@@ -16,7 +16,7 @@ public enum FrecuenciaGasto {
         this.paso = paso;
     }
 
-    /** Vacío para UNICA, que no se repite. */
+    // Vacio para UNICA porque no se repite
     public Optional<Period> paso() {
         return Optional.ofNullable(paso);
     }

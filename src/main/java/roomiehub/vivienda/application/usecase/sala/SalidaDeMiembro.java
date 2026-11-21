@@ -21,13 +21,10 @@ import roomiehub.vivienda.domain.repository.TareaRepository;
 import roomiehub.vivienda.domain.service.CalculadoraDeReparto;
 import roomiehub.vivienda.domain.service.SucesionDeAdministrador;
 
-/**
- * Lo que pasa cuando alguien deja una sala, por su cuenta (CU-05), al borrar su cuenta (CU-31) o
- * por expulsión (CU-06): RN-06, RN-08 y RN-10. Corre dentro de la transacción del caso de uso que la llama.
- *
- * El orden importa: todo se escribe mientras quien sale sigue siendo miembro, porque RLS solo le deja
- * tocar la sala mientras su membresía está activa. Su membresía se desactiva al final.
- */
+/* Lo que pasa cuando alguien deja una sala por su cuenta al borrar su cuenta o por expulsion
+   corre dentro de la transaccion del caso de uso
+   el orden importa porque RLS solo deja tocar la sala mientras sigue siendo miembro
+   por eso su membresia se desactiva al final */
 public class SalidaDeMiembro {
 
     private final SalaRepository salas;
@@ -72,7 +69,7 @@ public class SalidaDeMiembro {
         }
 
         if (saliente.rol() == Rol.ADMIN) { // RN-06
-            // Primero se degrada: el índice único solo admite un Administrador activo por sala.
+            // Primero se le quita el rol porque solo puede haber un admin activo por sala
             saliente.degradar();
             membresias.guardar(saliente);
             Membresia sucesor = SucesionDeAdministrador.sucesor(restantes);
@@ -98,14 +95,14 @@ public class SalidaDeMiembro {
                 deudas.guardar(deuda);
                 nuevas.forEach(deudas::guardar);
             } else if (deuda.reevaluar(Set.copyOf(quedan))) {
-                // Quien salió ya no cuenta como confirmador requerido: la deuda pudo quedar completa.
+                // Quien salio ya no tiene que confirmar y la deuda pudo quedar completa
                 deudas.guardar(deuda);
             }
         }
 
         gastos.desactivarParticipante(gasto.id(), usuarioId);
         if (quedan.isEmpty()) {
-            gasto.eliminar(usuarioId, ahora); // nadie más comparte este gasto
+            gasto.eliminar(usuarioId, ahora); // nadie mas comparte este gasto
             gastos.guardar(gasto);
         }
     }

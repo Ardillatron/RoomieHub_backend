@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.model.convivencia.MensajeChat;
 import roomiehub.vivienda.domain.model.sala.Membresia;
 import roomiehub.vivienda.domain.repository.MensajeRepository;
 
-/** CU-15: solo el Administrador; borrado lógico, y desaparece en vivo de los chats abiertos. */
+// CU-15 solo el admin borra el mensaje y desaparece en vivo de los chats abiertos
 public class EliminarMensaje {
 
     private final AccesoASala acceso;

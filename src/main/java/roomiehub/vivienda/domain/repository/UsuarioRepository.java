@@ -12,7 +12,7 @@ public interface UsuarioRepository {
 
     Optional<Usuario> buscarPorId(long id);
 
-    /** El correo ya viene normalizado (Usuario.normalizarCorreo). */
+    // El correo ya viene normalizado
     Optional<Usuario> buscarPorEmail(String email);
 
     Optional<Usuario> buscarPorGoogleSub(String googleSub);

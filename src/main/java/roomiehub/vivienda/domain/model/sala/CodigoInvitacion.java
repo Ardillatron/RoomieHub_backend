@@ -5,10 +5,8 @@ import java.util.random.RandomGenerator;
 
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 
-/**
- * RN-05: código fijo de la sala; el QR codifica este mismo texto. 8 caracteres sin los que se
- * confunden al dictarlos (0/O, 1/I/L): 32^8 ≈ 10^12 combinaciones.
- */
+/* Codigo fijo de la sala y el QR tiene el mismo texto
+   8 caracteres sin los que se confunden al dictar como 0 y O o 1 I y L */
 public record CodigoInvitacion(String valor) {
 
     private static final String ALFABETO = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -20,7 +18,7 @@ public record CodigoInvitacion(String valor) {
         }
     }
 
-    /** Acepta lo que escribe la persona: minúsculas y espacios alrededor. */
+    // Acepta lo que escribe la persona con minusculas y espacios
     public static CodigoInvitacion de(String texto) {
         return new CodigoInvitacion(texto == null ? null : texto.trim().toUpperCase(Locale.ROOT));
     }

@@ -19,12 +19,12 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 
-/** El aspecto fija app.usuario_id en la conexión que usan JPA y JdbcTemplate: {@code ./mvnw test -Ddb=true} */
+// El aspecto pone app usuario_id en la conexion de JPA y JdbcTemplate y se corre con mvnw test y db en true
 @SpringBootTest
 @EnabledIfSystemProperty(named = "db", matches = "true")
 class RlsContextAspectIntegrationTest {
 
-    /** Simula un caso de uso: un bean del proyecto con un método @Transactional. */
+    // Simula un caso de uso con un bean del proyecto y un metodo @Transactional
     static class Sonda {
         private final JdbcTemplate jdbc;
         private final EntityManager em;

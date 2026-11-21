@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface DispositivoRepository {
 
-    /** El token es único: si ya estaba en otra cuenta (otro login en el mismo teléfono), pasa a esta. */
+    // El token es unico y si estaba en otra cuenta pasa a esta
     void registrar(long usuarioId, String fcmToken, String plataforma, Instant ahora);
 
-    /** RN-37: los tokens de push de una cuenta eliminada se borran. */
+    // Se borran los tokens de push de una cuenta borrada
     void borrarDeUsuario(long usuarioId);
 
-    /** Sección 10: los tokens de push de esos usuarios, uno por teléfono. */
+    // Los tokens de push de esos usuarios uno por telefono
     List<String> tokensDe(Collection<Long> usuarios);
 
-    /** Se cerró sesión en ese teléfono, o FCM avisó que el token ya no existe (app desinstalada). */
+    // Se cerro sesion en ese telefono o FCM dijo que el token ya no existe
     void borrarToken(String fcmToken);
 }

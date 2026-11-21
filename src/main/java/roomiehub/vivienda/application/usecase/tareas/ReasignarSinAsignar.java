@@ -19,7 +19,7 @@ import roomiehub.vivienda.domain.repository.PuntosRepository;
 import roomiehub.vivienda.domain.service.AsignadorDeTareas;
 import roomiehub.vivienda.domain.service.AsignadorDeTareas.TareaARolear;
 
-/** CU-19 y RN-19: el Administrador reparte con el mismo algoritmo las que quedaron sin responsable. */
+// CU-19 el admin reparte con el mismo algoritmo las que quedaron sin responsable
 public class ReasignarSinAsignar {
 
     private final AccesoASala acceso;
@@ -42,12 +42,12 @@ public class ReasignarSinAsignar {
         this.reloj = reloj;
     }
 
-    /** @return cuántas asignaciones recibieron responsable */
+    // Regresa cuantas asignaciones recibieron responsable
     @Transactional
     public int ejecutar(long adminId, long salaId) {
         acceso.exigirAdministradorDeSalaActiva(salaId, adminId);
         Instant ahora = reloj.instant();
-        // Solo las de periodos abiertos: las ya cerradas no se pueden cumplir.
+        // Solo las de periodos abiertos porque las cerradas ya no se pueden cumplir
         Map<Long, AsignacionTarea> sinAsignar = asignaciones.pendientesDeSala(salaId).stream()
                 .filter(a -> a.usuarioId() == null && a.fin().isAfter(ahora))
                 .collect(Collectors.toMap(AsignacionTarea::id, Function.identity()));
@@ -58,7 +58,7 @@ public class ReasignarSinAsignar {
         Map<Long, Integer> puntajes = membresias.activasDeSala(salaId).stream()
                 .collect(Collectors.toMap(Membresia::usuarioId, m -> historicos.getOrDefault(m.usuarioId(), 0)));
 
-        // El asignador recibe ids de asignación en lugar de ids de tarea: aquí cada una es un periodo distinto.
+        // El asignador recibe ids de asignacion y no de tarea porque cada una es un periodo distinto
         List<TareaARolear> pendientes = sinAsignar.values().stream()
                 .map(a -> new TareaARolear(a.id(), a.valorAlAsignar()))
                 .toList();

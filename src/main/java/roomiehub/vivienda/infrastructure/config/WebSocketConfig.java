@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 import roomiehub.vivienda.infrastructure.security.AutenticacionStompInterceptor;
 
-/** Chat en tiempo real (sección 2): WebSocket en /ws, STOMP y un broker en memoria con colas por usuario. */
+// Chat en vivo por WebSocket en /ws con STOMP y un broker en memoria con colas por usuario
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -31,8 +31,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         ThreadPoolTaskScheduler latidos = new ThreadPoolTaskScheduler();
         latidos.setThreadNamePrefix("stomp-latidos-");
         latidos.initialize();
-        // shortcut: broker en memoria de una sola instancia; con varias, pasar a un broker externo.
-        // Los latidos cada 10 s mantienen viva la conexión detrás del proxy de Render.
+        /* shortcut broker en memoria de una sola instancia y con varias hay que usar uno externo
+           los latidos cada 10 segundos mantienen viva la conexion detras del proxy de Render */
         registry.enableSimpleBroker("/queue").setHeartbeatValue(new long[] {10_000, 10_000}).setTaskScheduler(latidos);
         registry.setUserDestinationPrefix("/user");
     }

@@ -41,7 +41,7 @@ public class JpaReaccionRepositoryAdapter implements ReaccionRepository {
         if (notaIds.isEmpty()) {
             return Map.of();
         }
-        Map<Long, long[]> totales = new HashMap<>(); // [likes, dislikes]
+        Map<Long, long[]> totales = new HashMap<>(); // likes y dislikes
         for (ReaccionJpaRepository.ConteoVista v : jpa.conteos(notaIds)) {
             totales.computeIfAbsent(v.getNotaId(), id -> new long[2])[v.getTipo() == TipoReaccion.LIKE ? 0 : 1] =
                     v.getTotal();

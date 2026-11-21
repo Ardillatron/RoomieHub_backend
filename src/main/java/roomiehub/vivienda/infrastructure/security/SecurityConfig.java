@@ -27,15 +27,15 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filtros(HttpSecurity http) throws Exception {
         return http
-                // Sin cookies de sesión: el JWT viaja en el encabezado, así que CSRF no aplica.
+                // Sin cookies de sesion porque el JWT va en el encabezado y CSRF no aplica
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                        // Sin JWT: lo protege su propio secreto (InternalJobsController)
+                        // Sin JWT porque lo protege su propio secreto
                         .requestMatchers(HttpMethod.POST, "/internal/jobs/ejecutar").permitAll()
                         .requestMatchers("/actuator/health", "/error").permitAll()
-                        // El handshake del WebSocket no lleva JWT: se valida en el CONNECT de STOMP
+                        // El handshake del WebSocket no lleva JWT y se valida en el CONNECT de STOMP
                         .requestMatchers("/ws").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))

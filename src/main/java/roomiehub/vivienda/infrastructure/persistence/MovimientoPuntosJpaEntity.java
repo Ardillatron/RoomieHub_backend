@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import roomiehub.vivienda.domain.model.tareas.TipoMovimiento;
 
-/** creado_en lo pone PostgreSQL (DEFAULT now()). */
+// creado_en lo pone PostgreSQL con DEFAULT now
 @Entity
 @Table(name = "movimientos_puntos")
 @Getter

@@ -27,11 +27,8 @@ import com.jayway.jsonpath.JsonPath;
 
 import roomiehub.vivienda.application.port.AlmacenamientoImagenesPort;
 
-/**
- * CU-05 y CU-31 contra PostgreSQL real, con RLS activo: {@code ./mvnw test -Ddb=true}
- *
- * Ana (Administradora), Beto y Carla comparten Internet de $100 MXN; Beto ya confirmó el pago de Carla.
- */
+/* CU-05 y CU-31 contra PostgreSQL real con RLS activo con mvnw test y db en true
+   Ana la admin Beto y Carla comparten Internet de 100 MXN y Beto ya confirmo el pago de Carla */
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -89,7 +86,7 @@ class SalidaIntegrationTest {
             return ids;
         });
 
-        // ─── Ana, la Administradora, abandona la sala ───
+        // Ana la admin deja la sala
         abandonar(ana, sala).andExpect(status().isNoContent());
 
         assertEquals(Map.of("ADMIN", 1L, "HABITANTE", 1L), como(beto.id(), () -> Map.of(
@@ -108,7 +105,7 @@ class SalidaIntegrationTest {
                 "Ana ya no ve la sala");
         abandonar(ana, sala).andExpect(status().isForbidden());
 
-        // ─── Carla elimina su cuenta (CU-31) ───
+        // Carla borra su cuenta
         mvc.perform(delete("/usuarios/yo").header("Authorization", "Bearer " + carla.access()))
                 .andExpect(status().isNoContent());
 
@@ -124,10 +121,10 @@ class SalidaIntegrationTest {
         json(post("/auth/refresh"), "{\"refreshToken\":\"%s\"}".formatted(carla.refresh()))
                 .andExpect(status().isUnauthorized());
 
-        // ─── Beto, el último, sale: la sala se borra (RN-10) ───
+        // Beto el ultimo sale y la sala se borra
         abandonar(beto, sala).andExpect(status().isNoContent());
         assertEquals(0L, contar("SELECT count(*) FROM buscar_sala_por_codigo(?)", codigo));
-        verify(almacenamiento).borrarCarpeta("roomiehub/salas/" + sala); // y sus imágenes con ella
+        verify(almacenamiento).borrarCarpeta("roomiehub/salas/" + sala); // y sus imagenes con ella
     }
 
     ResultActions abandonar(Cuenta c, long sala) throws Exception {

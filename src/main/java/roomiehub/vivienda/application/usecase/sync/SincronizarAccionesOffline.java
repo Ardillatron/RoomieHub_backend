@@ -13,16 +13,14 @@ import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.exception.DomainException;
 import roomiehub.vivienda.domain.exception.RecursoNoEncontradoException;
 
-/**
- * CU-27 (sección 8): procesa la cola offline en el orden en que el teléfono la generó. Cada acción pasa por
- * las tres validaciones del diagrama: miembro activo, UUID ya procesado y recurso existente. No es
- * transaccional: cada acción tiene su propia transacción en ProcesadorDeAccion.
- */
+/* CU-27 procesa la cola offline en el orden del telefono
+   cada accion revisa miembro activo UUID ya procesado y recurso existente
+   cada accion tiene su propia transaccion en ProcesadorDeAccion */
 public class SincronizarAccionesOffline {
 
     public static final int MAXIMO_POR_LOTE = 100;
 
-    /** {@code salasExpulsadas}: la app borra el caché local de esas salas (RN-36). */
+    // salasExpulsadas son las salas cuyo cache borra la app
     public record Resultado(List<ResultadoAccion> resultados, Set<Long> salasExpulsadas) {}
 
     private static final Logger log = Logger.getLogger(SincronizarAccionesOffline.class.getName());
@@ -66,7 +64,7 @@ public class SincronizarAccionesOffline {
         } catch (DomainException e) {
             return ResultadoAccion.de(accion, Estado.RECHAZADA, e.getMessage(), null);
         } catch (RuntimeException e) {
-            // Incluye dos envíos simultáneos de la misma acción: al reintentar, el UUID ya estará y saldrá DUPLICADA.
+            // Si llegan dos envios iguales al reintentar el UUID ya estara y sale DUPLICADA
             log.log(Level.SEVERE, "Falló la acción offline " + accion.uuid(), e);
             return ResultadoAccion.de(accion, Estado.ERROR, "Error del servidor; se reintentará", null);
         }

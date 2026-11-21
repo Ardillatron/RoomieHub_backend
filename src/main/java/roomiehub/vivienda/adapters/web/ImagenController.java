@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomiehub.vivienda.application.port.AlmacenamientoImagenesPort.FirmaDeSubida;
 import roomiehub.vivienda.application.usecase.convivencia.FirmarSubidaDeImagen;
 
-/**
- * Sección 8: la app pide la firma, sube la imagen directo a {@code urlDeSubida} (multipart con
- * {@code parametros} y el archivo en "file") y luego crea la nota o el mensaje con {@code imagenId}.
- */
+/* La app pide la firma sube la imagen directo a urlDeSubida
+   y luego crea la nota o el mensaje con imagenId */
 @RestController
 public class ImagenController {
 

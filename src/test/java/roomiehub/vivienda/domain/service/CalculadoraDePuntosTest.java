@@ -14,7 +14,7 @@ class CalculadoraDePuntosTest {
 
     @Test
     void ejemploDelDocumento() {
-        // Promedio 21.4 + tarea más alta 8 = 29.4 → 30
+        // Promedio 21 4 mas tarea mas alta 8 da 29 4 y se redondea a 30
         assertEquals(30, CalculadoraDePuntos.puntajeInicial(List.of(15, 20, 23, 24, 25), 8));
     }
 
@@ -30,7 +30,7 @@ class CalculadoraDePuntosTest {
 
     @Test
     void redondeaHaciaArribaConNegativos() {
-        // (-7 + -2) / 2 + 1 = -3.5 → -3
+        // Menos 7 y menos 2 entre 2 mas 1 da menos 3 5 y se redondea a menos 3
         assertEquals(-3, CalculadoraDePuntos.puntajeInicial(List.of(-7, -2), 1));
     }
 

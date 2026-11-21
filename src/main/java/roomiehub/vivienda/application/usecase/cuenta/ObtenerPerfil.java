@@ -14,7 +14,7 @@ public class ObtenerPerfil {
         this.usuarios = usuarios;
     }
 
-    /** Un JWT vigente de una cuenta ya eliminada se trata como inválido. */
+    // Un JWT vigente de una cuenta borrada se toma como invalido
     @Transactional(readOnly = true)
     public Usuario ejecutar(long usuarioId) {
         return usuarios.buscarPorId(usuarioId)

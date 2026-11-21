@@ -16,11 +16,8 @@ import roomiehub.vivienda.domain.model.sala.Membresia;
 import roomiehub.vivienda.domain.repository.AccionProcesadaRepository;
 import roomiehub.vivienda.domain.repository.MembresiaRepository;
 
-/**
- * Una acción, una transacción: si falla, se deshace completa (también su registro de UUID) y no afecta a las
- * demás. Es un bean aparte de SincronizarAccionesOffline porque Spring no abre la transacción si el método
- * @Transactional se llama desde la misma clase.
- */
+/* Una accion una transaccion y si falla se deshace completa sin afectar a las demas
+   es otro bean porque Spring no abre la transaccion si se llama desde la misma clase */
 public class ProcesadorDeAccion {
 
     private final MembresiaRepository membresias;
@@ -43,7 +40,7 @@ public class ProcesadorDeAccion {
         this.completarTarea = completarTarea;
     }
 
-    /** Dentro de una transacción para que RLS sepa quién pregunta. */
+    // Dentro de una transaccion para que RLS sepa quien pregunta
     @Transactional(readOnly = true)
     public Set<Long> salasActivas(long usuarioId) {
         return membresias.activasDeUsuario(usuarioId).stream().map(Membresia::salaId).collect(Collectors.toSet());
@@ -54,7 +51,7 @@ public class ProcesadorDeAccion {
         return procesadas.existe(uuid);
     }
 
-    /** Aplica la acción con su caso de uso de siempre y registra el UUID. @return la nota o mensaje creado */
+    // Aplica la accion con su caso de uso y guarda el UUID y regresa la nota o mensaje creado
     @Transactional
     public Long aplicar(long usuarioId, AccionOffline a) {
         Long recursoId = switch (a.tipo()) {
@@ -80,7 +77,7 @@ public class ProcesadorDeAccion {
         return recursoId;
     }
 
-    /** La sala de la acción la manda el teléfono: debe coincidir con la del recurso (sección 9). */
+    // La sala la manda el telefono y debe ser la misma del recurso
     private static void exigirDeLaSala(long salaDelRecurso, AccionOffline a) {
         if (salaDelRecurso != a.salaId()) {
             throw new DatoInvalidoException("La acción no corresponde a esa sala");

@@ -14,7 +14,7 @@ public interface NotaJpaRepository extends JpaRepository<NotaJpaEntity, Long> {
 
     Optional<NotaJpaEntity> findByClientUuid(UUID clientUuid);
 
-    // Sin las fijadas vigentes: esas ya van arriba del tablón.
+    // Sin las fijadas vigentes porque esas ya van arriba
     @Query("""
             SELECT n FROM NotaJpaEntity n
             WHERE n.salaId = :salaId AND n.eliminada = false AND (n.fijadaHasta IS NULL OR n.fijadaHasta <= :ahora)

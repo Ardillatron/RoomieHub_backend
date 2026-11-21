@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.model.sala.EstadoSala;
 import roomiehub.vivienda.domain.model.sala.Sala;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 
-/** CU-29 (Sistema) y RN-09: una sala desactivada se borra definitivamente a los 15 días, con sus imágenes. */
+// CU-29 una sala desactivada se borra a los 15 dias con sus imagenes
 public class BorrarSalaVencida {
 
     private final SalaRepository salas;
@@ -21,7 +21,7 @@ public class BorrarSalaVencida {
         this.almacenamiento = almacenamiento;
     }
 
-    /** @return true si la borró; entonces ya no hay nada más que procesar en esa sala */
+    // Regresa true si la borro y ya no hay nada mas que procesar
     @Transactional
     public boolean ejecutar(long salaId, Instant ahora) {
         Sala sala = salas.buscarPorId(salaId).orElseThrow();

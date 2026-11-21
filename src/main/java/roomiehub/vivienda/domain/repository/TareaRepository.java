@@ -13,9 +13,9 @@ public interface TareaRepository {
 
     List<Tarea> activasDeSala(long salaId);
 
-    /** RN-08: las asignaciones pendientes de quien sale quedan sin asignar (RN-19 las reasigna). */
+    // Las asignaciones pendientes de quien sale quedan sin asignar
     void desasignarPendientes(long salaId, long usuarioId);
 
-    /** RN-18: valor de la tarea activa más alta de la sala, o 0 si no hay tareas. */
+    // Valor de la tarea activa mas alta de la sala o 0 si no hay tareas
     int valorMasAlto(long salaId);
 }

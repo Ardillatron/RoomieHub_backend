@@ -34,7 +34,7 @@ class CalculadoraDeRepartoTest {
 
     @Test
     void variosCentavosSobrantesEnVueltaCircular() {
-        // 0.05 entre 3: sobran 2 centavos; en el periodo 2 los reciben las posiciones 2 y 0.
+        // 5 centavos entre 3 sobran 2 y en el periodo 2 los reciben las posiciones 2 y 0
         assertEquals(List.of("0.02", "0.01", "0.02"), montos("0.05", 3, 2));
     }
 

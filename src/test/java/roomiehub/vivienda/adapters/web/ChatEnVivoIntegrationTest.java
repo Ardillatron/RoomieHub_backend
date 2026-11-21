@@ -33,10 +33,8 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import com.jayway.jsonpath.JsonPath;
 
-/**
- * CU-11, CU-14, CU-15 y CU-32 con el servidor en un puerto real: los mensajes se envían por REST y llegan
- * por STOMP a /user/queue/chat. {@code ./mvnw test -Ddb=true}
- */
+/* CU-11 CU-14 CU-15 y CU-32 con el servidor en un puerto real
+   los mensajes se envian por REST y llegan por STOMP y se corre con mvnw test y db en true */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnabledIfSystemProperty(named = "db", matches = "true")
 class ChatEnVivoIntegrationTest {
@@ -66,19 +64,19 @@ class ChatEnVivoIntegrationTest {
 
         BlockingQueue<Map<String, Object>> deBeto = conectar(beto), deCarla = conectar(carla), deIntruso = conectar(intruso);
 
-        // ─── CU-14: llega a los miembros, no a quien está fuera de la sala ───
+        // CU-14 llega a los miembros y no a quien esta fuera de la sala
         long hola = id(post(ana, "/salas/" + sala + "/mensajes", Map.of("texto", "Hola a todos")));
         assertEquals("Hola a todos", textoDe(deBeto.poll(5, TimeUnit.SECONDS)));
         assertEquals("Hola a todos", textoDe(deCarla.poll(5, TimeUnit.SECONDS)));
         assertNull(deIntruso.poll(1, TimeUnit.SECONDS));
 
-        // ─── Quien es expulsado deja de recibir en ese mismo instante ───
+        // Quien es expulsado deja de recibir al instante
         status(ana, HttpMethod.DELETE, "/salas/" + sala + "/miembros/" + carla.id(), null);
         post(ana, "/salas/" + sala + "/mensajes", Map.of("texto", "Solo para Beto"));
         assertEquals("Solo para Beto", textoDe(deBeto.poll(5, TimeUnit.SECONDS)));
         assertNull(deCarla.poll(1, TimeUnit.SECONDS));
 
-        // ─── CU-15: eliminar desaparece el mensaje de los chats abiertos ───
+        // CU-15 borrar quita el mensaje de los chats abiertos
         assertEquals(403, status(beto, HttpMethod.DELETE, "/mensajes/" + hola, null));
         assertEquals(204, status(ana, HttpMethod.DELETE, "/mensajes/" + hola, null));
         Map<String, Object> eliminado = deBeto.poll(5, TimeUnit.SECONDS);
@@ -95,7 +93,7 @@ class ChatEnVivoIntegrationTest {
         post(beto, "/salas/unirse", Map.of("codigo", JsonPath.read(get(ana, "/salas/" + sala), "$.codigoInvitacion")));
         long otraSala = id(post(beto, "/salas", Map.of("nombre", "Otra", "zonaHoraria", "America/Mexico_City")));
 
-        // CU-11 y RN-30: responder una nota del tablón la muestra citada
+        // CU-11 responder una nota del tablon la muestra citada
         long nota = id(post(ana, "/salas/" + sala + "/notas", Map.of("texto", "Junta el domingo")));
         String respuesta = post(beto, "/salas/" + sala + "/mensajes", Map.of("texto", "Ahí estaré", "notaRespondidaId", nota));
         assertEquals("Junta el domingo", JsonPath.read(respuesta, "$.notaCitada.texto"));
@@ -103,19 +101,19 @@ class ChatEnVivoIntegrationTest {
         assertEquals(404, status(beto, HttpMethod.POST, "/salas/" + sala + "/mensajes",
                 Map.of("texto", "x", "notaRespondidaId", notaDeOtraSala)));
 
-        // RN-35: reenviar con el mismo UUID no duplica
+        // Reenviar con el mismo UUID no duplica
         String uuid = UUID.randomUUID().toString();
         long primero = id(post(ana, "/salas/" + sala + "/mensajes", Map.of("texto", "Sin señal", "clientUuid", uuid)));
         assertEquals(primero, id(post(ana, "/salas/" + sala + "/mensajes", Map.of("texto", "Sin señal", "clientUuid", uuid))));
         assertEquals(400, status(ana, HttpMethod.POST, "/salas/" + sala + "/mensajes", Map.of("texto", " ")));
 
-        // Historial del más nuevo al más viejo, paginado
+        // Historial del mas nuevo al mas viejo por paginas
         String historial = get(beto, "/salas/" + sala + "/mensajes?limite=1");
         assertEquals(List.of("Sin señal"), JsonPath.read(historial, "$[*].texto"));
         assertEquals(List.of("Ahí estaré"), JsonPath.read(
                 get(beto, "/salas/" + sala + "/mensajes?limite=1&antesDe=" + primero), "$[*].texto"));
 
-        // CU-32: el reporte llega al Administrador con el texto del mensaje
+        // CU-32 el reporte llega al admin con el texto del mensaje
         assertEquals(201, status(beto, HttpMethod.POST, "/mensajes/" + primero + "/reportes", Map.of("motivo", "Spam")));
         assertEquals("Sin señal", JsonPath.read(get(ana, "/salas/" + sala + "/reportes"), "$[0].contenido"));
     }
@@ -135,12 +133,12 @@ class ChatEnVivoIntegrationTest {
         assertFalse(sesion.isConnected(), "el servidor corta la conexión al intentar otra cola");
     }
 
-    // ─── Ayudantes ───
+    // Ayudantes
 
     BlockingQueue<Map<String, Object>> conectar(Cuenta c) throws Exception {
         BlockingQueue<Map<String, Object>> eventos = new LinkedBlockingQueue<>();
         sesion(c).subscribe("/user/queue/chat", new ColaDeEventos(eventos));
-        Thread.sleep(300); // que la suscripción quede registrada antes de publicar
+        Thread.sleep(300); // que la suscripcion quede registrada antes de publicar
         return eventos;
     }
 

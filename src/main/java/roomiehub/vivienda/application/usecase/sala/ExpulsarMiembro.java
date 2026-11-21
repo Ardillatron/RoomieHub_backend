@@ -12,7 +12,7 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/** CU-06: RN-07 y RN-08. El expulsado puede volver con el código. */
+// CU-06 expulsa a un miembro y puede volver con el codigo
 public class ExpulsarMiembro {
 
     private final SalaRepository salas;

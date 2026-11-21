@@ -149,7 +149,7 @@ class TareaDominioTest {
     void elTrimestreEmpiezaEnEneroAbrilJulioUOctubreEnLaZonaDeLaSala() {
         assertEquals(Instant.parse("2026-10-01T06:00:00Z"),
                 CalculadoraDePuntos.inicioDelTrimestre(Instant.parse("2026-11-15T00:00:00Z"), CDMX));
-        // 1 de enero a las 03:00 UTC sigue siendo 31 de diciembre en CDMX
+        // 1 de enero a las 03 00 UTC sigue siendo 31 de diciembre en CDMX
         assertEquals(Instant.parse("2025-10-01T06:00:00Z"),
                 CalculadoraDePuntos.inicioDelTrimestre(Instant.parse("2026-01-01T03:00:00Z"), CDMX));
     }

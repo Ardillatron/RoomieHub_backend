@@ -8,7 +8,7 @@ import roomiehub.vivienda.application.usecase.sala.AccesoASala;
 import roomiehub.vivienda.domain.model.finanzas.GastoCompartido;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 
-/** CU-20 (eliminar): RN-25, borrado lógico. Sus deudas se conservan pero ya no admiten avisos ni confirmaciones. */
+// CU-20 eliminar es un borrado logico y sus deudas ya no aceptan avisos ni confirmaciones
 public class EliminarGasto {
 
     private final AccesoASala acceso;

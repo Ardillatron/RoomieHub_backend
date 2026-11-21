@@ -15,10 +15,8 @@ import roomiehub.vivienda.application.usecase.tareas.RolearTareas;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.infrastructure.security.ContextoSistemaRls;
 
-/**
- * Una sala, una transacción. Es un bean aparte de TareasProgramadas porque Spring no abre la
- * transacción si el método @Transactional se llama desde la misma clase (sección 9).
- */
+/* Una transaccion por sala
+   es otro bean porque Spring no abre la transaccion si se llama desde la misma clase */
 @Component
 public class ProcesadorSala {
 
@@ -51,13 +49,13 @@ public class ProcesadorSala {
     public void procesar(long salaId) {
         contexto.entrarComoSistema(salaId);
         if (!salas.intentarBloquearProcesamiento(salaId)) {
-            return; // otro proceso ya la está atendiendo
+            return; // otro proceso ya la esta atendiendo
         }
         Instant ahora = reloj.instant();
         if (borrarSalaVencida.ejecutar(salaId, ahora)) {
             return;
         }
-        // Primero se cierran los periodos vencidos y después se abren los nuevos.
+        // Primero cierra los periodos vencidos y luego abre los nuevos
         penalizarVencidas.ejecutar(salaId, ahora);
         rolearTareas.ejecutar(salaId, ahora);
         generarDeudas.ejecutar(salaId, ahora);

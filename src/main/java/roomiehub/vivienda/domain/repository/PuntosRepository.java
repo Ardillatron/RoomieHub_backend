@@ -7,10 +7,10 @@ import roomiehub.vivienda.domain.model.tareas.MovimientoPuntos;
 
 public interface PuntosRepository {
 
-    /** Puntaje histórico (RN-17) de cada usuario con movimientos en la sala; sin movimientos = 0. */
+    // Puntaje historico de cada usuario con movimientos en la sala y sin movimientos es 0
     Map<Long, Integer> historicos(long salaId);
 
-    /** RN-17: balance visible, solo COMPLETADA y PENALIZACION desde {@code desde}. */
+    // Balance visible solo con COMPLETADA y PENALIZACION desde la fecha dada
     Map<Long, Integer> visibles(long salaId, Instant desde);
 
     void registrar(MovimientoPuntos movimiento);

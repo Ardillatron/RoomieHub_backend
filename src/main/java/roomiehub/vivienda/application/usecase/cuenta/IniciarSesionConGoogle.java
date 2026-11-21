@@ -11,10 +11,8 @@ import roomiehub.vivienda.domain.model.cuenta.Usuario;
 import roomiehub.vivienda.domain.repository.RefreshTokenRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/**
- * CU-01 con Google. Busca la cuenta por el id estable de Google (sub); si no existe, vincula la
- * cuenta de correo con el mismo correo verificado o crea una nueva.
- */
+/* CU-01 con Google busca la cuenta por el id de Google
+   si no existe vincula la cuenta con el mismo correo verificado o crea una nueva */
 public class IniciarSesionConGoogle {
 
     private final VerificadorGooglePort google;
@@ -41,7 +39,7 @@ public class IniciarSesionConGoogle {
     }
 
     private Usuario vincularOCrear(IdentidadGoogle identidad) {
-        // Sin correo verificado, cualquiera podría apropiarse de una cuenta ajena con ese correo.
+        // Sin correo verificado cualquiera podria quedarse con una cuenta ajena
         if (!identidad.emailVerificado()) {
             throw new CredencialesInvalidasException();
         }
@@ -49,10 +47,10 @@ public class IniciarSesionConGoogle {
         return usuarios.buscarPorEmail(correo)
                 .map(existente -> {
                     if (existente.googleSub() != null) {
-                        throw new CredencialesInvalidasException(); // ya vinculada a otra cuenta de Google
+                        throw new CredencialesInvalidasException(); // ya esta vinculada a otra cuenta de Google
                     }
                     existente.vincularGoogle(identidad.sub());
-                    // Las sesiones abiertas con esa contraseña pueden ser de otra persona: se cierran.
+                    // Las sesiones abiertas con esa contraseña pueden ser de otra persona y se cierran
                     refreshTokens.revocarTodos(existente.id(), reloj.instant());
                     return usuarios.guardar(existente);
                 })

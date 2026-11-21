@@ -6,7 +6,8 @@ import java.util.Objects;
 
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 
-/** RN-39: una tarea se repite cada N días (1 a 365) o cada mes. Se escribe como periodo ISO-8601: P3D, P1M. */
+/* Una tarea se repite cada N dias de 1 a 365 o cada mes
+   se escribe como periodo ISO 8601 como P3D o P1M */
 public record Frecuencia(Period paso) {
 
     public static final int MAXIMO_DIAS = 365;
@@ -29,7 +30,7 @@ public record Frecuencia(Period paso) {
         return new Frecuencia(Period.ofDays(dias));
     }
 
-    /** P1W se guarda como P7D, así que dos escrituras de la misma frecuencia son iguales. */
+    // P1W se guarda como P7D para que la misma frecuencia sea igual
     public static Frecuencia de(String iso) {
         try {
             return new Frecuencia(Period.parse(Objects.requireNonNull(iso, "frecuencia")));

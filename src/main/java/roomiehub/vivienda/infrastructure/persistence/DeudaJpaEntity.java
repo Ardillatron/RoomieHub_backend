@@ -60,7 +60,7 @@ public class DeudaJpaEntity {
     @Column(name = "ultimo_recordatorio_en")
     private Instant ultimoRecordatorioEn;
 
-    /** Lo pone PostgreSQL (DEFAULT now()). */
+    // Lo pone PostgreSQL con DEFAULT now
     @Column(name = "creado_en", insertable = false, updatable = false)
     private Instant creadoEn;
 }

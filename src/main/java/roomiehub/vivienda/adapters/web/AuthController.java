@@ -27,7 +27,7 @@ import roomiehub.vivienda.application.usecase.cuenta.Sesion;
 import roomiehub.vivienda.domain.exception.CredencialesInvalidasException;
 import roomiehub.vivienda.domain.model.cuenta.Usuario;
 
-/** CU-01: registro, inicio de sesión (correo o Google), renovación y cierre de sesión. */
+// CU-01 registro login con correo o Google renovar y cerrar sesion
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -44,7 +44,7 @@ public class AuthController {
 
     public record RefreshRequest(@NotBlank String refreshToken) {}
 
-    /** {@code fcmToken}: el del teléfono, para que deje de recibir push de esta cuenta. */
+    // fcmToken es el del telefono para que deje de recibir push de esta cuenta
     public record LogoutRequest(@NotBlank String refreshToken, @Size(max = 4096) String fcmToken) {}
 
     public record SesionResponse(String accessToken, Instant accesoExpiraEn, String refreshToken,
@@ -60,7 +60,7 @@ public class AuthController {
     private final IniciarSesionConGoogle iniciarSesionConGoogle;
     private final RenovarSesion renovarSesion;
     private final CerrarSesion cerrarSesion;
-    // 5 contraseñas incorrectas en 15 minutos bloquean esa cuenta desde esa IP hasta que termine la ventana.
+    // 5 contraseñas malas en 15 minutos bloquean esa cuenta desde esa IP hasta que pase el tiempo
     private final LimitadorDeIntentos fallidosPorCorreo;
 
     public AuthController(RegistrarUsuario registrarUsuario, IniciarSesion iniciarSesion,
@@ -82,7 +82,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public SesionResponse login(@Valid @RequestBody LoginRequest r, HttpServletRequest request) {
-        // Con la IP en la llave, quien falla a propósito con un correo ajeno solo se bloquea a sí mismo.
+        // Con la IP en la llave quien falla a proposito con un correo ajeno solo se bloquea a si mismo
         String clave = Usuario.normalizarCorreo(r.email()) + "|" + request.getRemoteAddr();
         long espera = fallidosPorCorreo.bloqueadoPor(clave);
         if (espera > 0) {

@@ -12,7 +12,7 @@ import roomiehub.vivienda.domain.model.cuenta.Usuario;
 import roomiehub.vivienda.domain.repository.RefreshTokenRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** Sección 9: el refresh token se rota en cada uso. */
+// El refresh token cambia en cada uso
 public class RenovarSesion {
 
     static final Duration GRACIA_REINTENTO = Duration.ofSeconds(10);
@@ -30,7 +30,7 @@ public class RenovarSesion {
         this.reloj = reloj;
     }
 
-    // noRollbackFor: si se detecta reúso, la revocación de todas las sesiones debe quedar guardada.
+    // Si se detecta reuso la revocacion de todas las sesiones debe guardarse
     @Transactional(noRollbackFor = CredencialesInvalidasException.class)
     public Sesion ejecutar(String refreshToken) {
         Instant ahora = reloj.instant();
@@ -40,11 +40,11 @@ public class RenovarSesion {
             throw new CredencialesInvalidasException();
         }
         if (!refreshTokens.revocarSiVigente(actual.id(), ahora)) {
-            // Revocado hace un instante (o en paralelo, por eso aún se leyó vigente): es el mismo teléfono que
-            // renovó dos veces a la vez o reintentó tras perder la respuesta. Solo se rechaza.
+            /* Se revoco hace un instante y es el mismo telefono que renovo dos veces
+               o reintento al perder la respuesta y solo se rechaza */
             boolean reintento = actual.revocadoEn() == null || actual.revocadoEn().isAfter(ahora.minus(GRACIA_REINTENTO));
             if (!reintento) {
-                // Reusar un token ya rotado indica que alguien más lo tiene: se cierran todas las sesiones.
+                // Reusar un token ya usado indica que alguien mas lo tiene y se cierran todas las sesiones
                 refreshTokens.revocarTodos(actual.usuarioId(), ahora);
             }
             throw new CredencialesInvalidasException();

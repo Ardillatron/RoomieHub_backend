@@ -2,13 +2,11 @@ package roomiehub.vivienda.application.usecase.convivencia;
 
 import roomiehub.vivienda.domain.model.convivencia.MensajeChat;
 
-/**
- * Un mensaje listo para mostrar: nombre del autor, imágenes firmadas y, si responde una nota (RN-30), la
- * nota citada.
- */
+/* Un mensaje listo para mostrar con nombre del autor imagenes firmadas
+   y la nota citada si responde una */
 public record MensajeVista(MensajeChat mensaje, String autor, String imagenUrl, String imagenMiniaturaUrl,
                            NotaCitada notaCitada) {
 
-    /** {@code null} en texto e imagen si la nota citada se eliminó después. */
+    // Texto e imagen en null si la nota citada se borro
     public record NotaCitada(long id, String texto, String imagenMiniaturaUrl) {}
 }

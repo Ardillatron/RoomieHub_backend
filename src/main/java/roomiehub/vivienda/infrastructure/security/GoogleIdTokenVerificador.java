@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import roomiehub.vivienda.application.port.VerificadorGooglePort;
 import roomiehub.vivienda.domain.exception.CredencialesInvalidasException;
 
-/** Valida el ID token de Google Sign-In con las llaves públicas de Google. */
+// Valida el token de Google Sign In con las llaves publicas de Google
 @Component
 public class GoogleIdTokenVerificador implements VerificadorGooglePort {
 
@@ -29,13 +29,13 @@ public class GoogleIdTokenVerificador implements VerificadorGooglePort {
 
     private final JwtDecoder decoder;
 
-    /** @param clientIds los client ID de OAuth de la app (Android, iOS), separados por comas */
+    // clientIds son los client ID de OAuth de la app separados por comas
     @Autowired
     public GoogleIdTokenVerificador(@Value("${app.google.client-ids:}") List<String> clientIds) {
         this(NimbusJwtDecoder.withJwkSetUri(LLAVES_GOOGLE).build(), clientIds);
     }
 
-    /** Para los tests: un decodificador con otras llaves y las mismas validaciones. */
+    // Para tests un decodificador con otras llaves y las mismas validaciones
     GoogleIdTokenVerificador(NimbusJwtDecoder decoder, List<String> clientIds) {
         List<String> audiencias = clientIds.stream().filter(id -> !id.isBlank()).toList();
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(

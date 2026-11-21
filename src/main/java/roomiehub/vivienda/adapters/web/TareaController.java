@@ -36,11 +36,11 @@ import roomiehub.vivienda.domain.model.tareas.EstadoAsignacion;
 import roomiehub.vivienda.domain.model.tareas.Frecuencia;
 import roomiehub.vivienda.domain.model.tareas.Tarea;
 
-/** CU-16 a CU-19. */
+// CU-16 a CU-19 tareas
 @RestController
 public class TareaController {
 
-    /** {@code frecuencia}: periodo ISO-8601, cada N días (P1D a P365D) o cada mes (P1M). */
+    // frecuencia es un periodo ISO 8601 cada N dias de P1D a P365D o cada mes P1M
     public record CrearTareaRequest(@NotBlank @Size(max = 80) String nombre, @Size(max = 500) String descripcion,
                                     @NotNull @Min(1) @Max(10) Integer valor, @NotBlank String frecuencia,
                                     @NotNull LocalDate fechaInicio) {}

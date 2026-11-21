@@ -7,25 +7,23 @@ import roomiehub.vivienda.domain.model.finanzas.GastoCompartido;
 
 public interface GastoRepository {
 
-    /** También devuelve gastos eliminados: quien llama decide (sección 8, recurso eliminado). */
+    // Tambien regresa gastos borrados y quien llama decide
     Optional<GastoCompartido> buscarPorId(long id);
 
     List<GastoCompartido> vigentesDeSala(long salaId);
 
-    /** Gastos vigentes de la sala en los que el usuario es participante activo. */
+    // Gastos vigentes de la sala donde el usuario participa
     List<GastoCompartido> conParticipanteActivo(long salaId, long usuarioId);
 
-    /** Ids de los participantes activos, en el orden fijo del gasto (RN-22). */
+    // Ids de los participantes activos en el orden fijo del gasto
     List<Long> participantesActivos(long gastoId);
 
-    /**
-     * Deja activos exactamente estos usuarios. Quien ya estuvo conserva su lugar en el orden fijo;
-     * quien entra por primera vez va al final (RN-22).
-     */
+    /* Deja activos solo estos usuarios
+       quien ya estuvo conserva su lugar y quien entra por primera vez va al final */
     void definirParticipantes(long gastoId, long salaId, List<Long> usuarios);
 
     void desactivarParticipante(long gastoId, long usuarioId);
 
-    /** Inserta o actualiza; devuelve el gasto con su id. */
+    // Inserta o actualiza y regresa el gasto con su id
     GastoCompartido guardar(GastoCompartido gasto);
 }

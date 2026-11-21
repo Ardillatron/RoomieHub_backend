@@ -32,7 +32,7 @@ import roomiehub.vivienda.application.usecase.sala.UnirseASala;
 import roomiehub.vivienda.domain.model.sala.EstadoSala;
 import roomiehub.vivienda.domain.model.sala.Rol;
 
-/** CU-02 a CU-08. El QR lo dibuja la app a partir de codigoInvitacion (RN-05). */
+// CU-02 a CU-08 salas y el QR lo dibuja la app con codigoInvitacion
 @RestController
 @RequestMapping("/salas")
 public class SalaController {
@@ -100,7 +100,7 @@ public class SalaController {
         return SalaResponse.de(consultarSalas.detalle(usuario(jwt), salaId));
     }
 
-    /** CU-05: el usuario deja la sala (su propia membresía). */
+    // CU-05 el usuario deja la sala
     @DeleteMapping("/{salaId}/membresia")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void abandonar(@AuthenticationPrincipal Jwt jwt, @PathVariable long salaId) {

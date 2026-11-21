@@ -18,11 +18,8 @@ import roomiehub.vivienda.domain.model.sala.Membresia;
 import roomiehub.vivienda.domain.repository.MensajeRepository;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 
-/**
- * CU-14 y CU-11: RN-30 y RN-32. Llega en vivo a los miembros con la app abierta (también a los otros
- * dispositivos del autor) y por push a los demás (sección 10). Con el UUID de la app (RN-35), reenviar
- * el mismo mensaje devuelve el ya creado sin volver a publicarlo.
- */
+/* CU-14 y CU-11 envia un mensaje que llega en vivo a quien tiene la app abierta y por push a los demas
+   con el UUID de la app reenviar el mismo mensaje regresa el ya creado */
 public class EnviarMensaje {
 
     private final AccesoASala acceso;

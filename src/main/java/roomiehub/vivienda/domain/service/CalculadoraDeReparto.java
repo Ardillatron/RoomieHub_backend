@@ -7,15 +7,13 @@ import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.model.finanzas.Deuda;
 import roomiehub.vivienda.domain.model.finanzas.Dinero;
 
-/**
- * RN-22: división equitativa en centavos. Si sobran r centavos en el periodo k, los reciben los r
- * participantes a partir de la posición k mod N, en el orden fijo de servicio_participantes.orden.
- */
+/* Reparte en centavos por partes iguales
+   los centavos que sobran los reciben los participantes desde la posicion k mod N */
 public final class CalculadoraDeReparto {
 
     private CalculadoraDeReparto() {}
 
-    /** @return el monto de cada participante, en el mismo orden que los participantes. */
+    // Regresa el monto de cada participante en el mismo orden
     public static List<Dinero> repartir(Dinero total, int participantes, long numeroPeriodo) {
         if (participantes < 1) {
             throw new DatoInvalidoException("Un gasto necesita al menos un participante");
@@ -33,12 +31,9 @@ public final class CalculadoraDeReparto {
         return montos;
     }
 
-    /**
-     * RN-08: la deuda pendiente de quien sale pasa a Repartida y su monto se divide entre los que
-     * quedan, como deudas nuevas que apuntan a la original. Sin nadie que quede, no genera deudas.
-     *
-     * @param restantes participantes activos que quedan, en el orden fijo del gasto
-     */
+    /* La deuda pendiente de quien sale pasa a Repartida y su monto se divide entre los que quedan
+       como deudas nuevas que apuntan a la original y si no queda nadie no genera deudas
+       restantes son los participantes activos que quedan en el orden del gasto */
     public static List<Deuda> repartirDeuda(Deuda original, List<Long> restantes, long numeroPeriodo) {
         original.marcarRepartida();
         if (restantes.isEmpty()) {

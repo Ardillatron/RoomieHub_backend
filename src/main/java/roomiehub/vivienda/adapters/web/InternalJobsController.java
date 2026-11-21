@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import roomiehub.vivienda.adapters.scheduler.TareasProgramadas;
 
-/**
- * Sección 12: el disparador externo (GitHub Actions o un cron por HTTP) llama aquí cada 15 minutos.
- * Esa petición despierta la instancia de Render. Sin secreto configurado, el endpoint no existe (404).
- */
+/* El disparador externo llama aqui cada 15 minutos y despierta la instancia de Render
+   sin secreto configurado el endpoint no existe y responde 404 */
 @RestController
 public class InternalJobsController {
 
@@ -32,7 +30,7 @@ public class InternalJobsController {
         if (secreto.length == 0) {
             return ResponseEntity.notFound().build();
         }
-        // Comparación en tiempo constante, para no revelar el secreto por el tiempo de respuesta.
+        // Compara en tiempo constante para no revelar el secreto
         if (recibido == null || !MessageDigest.isEqual(secreto, recibido.getBytes(StandardCharsets.UTF_8))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

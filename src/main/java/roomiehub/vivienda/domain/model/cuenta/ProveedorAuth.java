@@ -1,6 +1,6 @@
 package roomiehub.vivienda.domain.model.cuenta;
 
-/** Cómo se registró la cuenta (CU-01). APPLE queda para la publicación en iOS. */
+// Como se registro la cuenta y APPLE queda para iOS
 public enum ProveedorAuth {
     EMAIL,
     GOOGLE,

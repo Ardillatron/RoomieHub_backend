@@ -15,14 +15,14 @@ public final class ReglasDeMembresia {
 
     private ReglasDeMembresia() {}
 
-    /** RN-02, al crear o al unirse. Una sala desactivada sigue contando mientras exista (RN-09). */
+    // Al crear o unirse y una sala desactivada sigue contando mientras exista
     public static void validarLimiteDeMembresias(int membresiasActivasDelUsuario) {
         if (membresiasActivasDelUsuario >= MEMBRESIAS_MAXIMAS) {
             throw new LimiteMembresiasException();
         }
     }
 
-    /** RN-01 y RN-02, al unirse. */
+    // Revisa los limites al unirse
     public static void validarIngreso(int miembrosActivosDeLaSala, int membresiasActivasDelUsuario) {
         if (miembrosActivosDeLaSala >= CAPACIDAD_MAXIMA) {
             throw new CapacidadExcedidaException();
@@ -30,7 +30,7 @@ public final class ReglasDeMembresia {
         validarLimiteDeMembresias(membresiasActivasDelUsuario);
     }
 
-    /** Sección 3: las acciones administrativas solo las hace el Administrador activo. */
+    // Las acciones de admin solo las hace el admin activo
     public static Membresia exigirAdministrador(List<Membresia> activas, long usuarioId) {
         return activas.stream()
                 .filter(m -> m.usuarioId() == usuarioId && m.rol() == Rol.ADMIN)

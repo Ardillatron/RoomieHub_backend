@@ -12,7 +12,7 @@ import roomiehub.vivienda.domain.exception.OperacionNoPermitidaException;
 
 public final class Sala {
 
-    /** RN-09: plazo para reactivar una sala desactivada antes de que se borre. */
+    // Plazo para reactivar una sala desactivada antes de que se borre
     public static final Duration PLAZO_REACTIVACION = Duration.ofDays(15);
 
     private final Long id;
@@ -34,12 +34,12 @@ public final class Sala {
         this.desactivadaEn = desactivadaEn;
     }
 
-    /** CU-02. La zona horaria viene del teléfono del creador (RN-38). */
+    // CU-02 la zona horaria viene del telefono del creador
     public static Sala nueva(String nombre, long creadorId, String zonaHoraria, CodigoInvitacion codigo) {
         return new Sala(null, nombre, creadorId, zona(zonaHoraria), codigo.valor(), EstadoSala.ACTIVA, null);
     }
 
-    /** RN-09: solo lectura hasta que se reactive o pasen 15 días. */
+    // Solo lectura hasta que se reactive o pasen 15 dias
     public void desactivar(Instant ahora) {
         if (estado == EstadoSala.DESACTIVADA) {
             throw new ConflictoDeEstadoException("La sala ya está desactivada");
@@ -59,7 +59,7 @@ public final class Sala {
         desactivadaEn = null;
     }
 
-    /** Las acciones que cambian la sala (salvo reactivarla o salir de ella) llaman a esto primero. */
+    // Las acciones que cambian la sala llaman a esto primero menos reactivar o salir
     public void exigirActiva() {
         if (estado == EstadoSala.DESACTIVADA) {
             throw new OperacionNoPermitidaException("La sala está desactivada: solo lectura");

@@ -18,10 +18,8 @@ import roomiehub.vivienda.application.usecase.sync.AccionOffline;
 import roomiehub.vivienda.application.usecase.sync.ResultadoAccion;
 import roomiehub.vivienda.application.usecase.sync.SincronizarAccionesOffline;
 
-/**
- * CU-27: la app envía su cola offline completa, en el orden en que la generó, y recibe un resultado por
- * acción. Siempre responde 200 aunque haya rechazos: cada resultado dice qué hacer con su acción.
- */
+/* CU-27 la app manda su cola offline en orden y recibe un resultado por accion
+   siempre responde 200 y cada resultado dice que hacer con su accion */
 @RestController
 public class SyncController {
 

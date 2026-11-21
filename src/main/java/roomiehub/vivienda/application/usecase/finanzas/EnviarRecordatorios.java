@@ -17,10 +17,8 @@ import roomiehub.vivienda.domain.repository.DeudaRepository;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 
-/**
- * Sección 10 (Sistema): al deudor a los 3 días si no ha avisado y luego cada 7, máximo 3 por periodo; a
- * quien falte por confirmar, a las 24 horas del aviso. Ni gastos eliminados ni salas desactivadas.
- */
+/* Avisa al deudor a los 3 dias si no ha avisado y luego cada 7 maximo 3 por periodo
+   a quien falte confirmar le avisa a las 24 horas sin gastos borrados ni salas desactivadas */
 public class EnviarRecordatorios {
 
     private final SalaRepository salas;

@@ -37,7 +37,7 @@ import roomiehub.vivienda.domain.model.finanzas.FrecuenciaGasto;
 import roomiehub.vivienda.domain.model.finanzas.GastoCompartido;
 import roomiehub.vivienda.domain.model.finanzas.Moneda;
 
-/** CU-20 a CU-22. Los montos viajan como texto decimal ("33.34") para no perder centavos en un double. */
+// CU-20 a CU-22 los montos viajan como texto para no perder centavos
 @RestController
 public class FinanzasController {
 

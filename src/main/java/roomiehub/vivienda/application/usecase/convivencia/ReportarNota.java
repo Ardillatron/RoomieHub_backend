@@ -14,7 +14,7 @@ import roomiehub.vivienda.domain.model.sala.Rol;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 import roomiehub.vivienda.domain.repository.ReporteRepository;
 
-/** CU-10: RN-29, el reporte llega al Administrador, quien decide qué hacer. */
+// CU-10 el reporte de la nota le llega al admin y el decide
 public class ReportarNota {
 
     private final AccesoASala acceso;

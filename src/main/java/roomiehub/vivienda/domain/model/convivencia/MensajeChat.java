@@ -7,7 +7,7 @@ import java.util.UUID;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.exception.RecursoNoEncontradoException;
 
-/** RN-30 y RN-32: un mensaje del chat general de la sala, con texto, imagen o ambos. */
+// Un mensaje del chat de la sala con texto imagen o ambos
 public final class MensajeChat {
 
     private final Long id;
@@ -40,16 +40,14 @@ public final class MensajeChat {
         this.eliminado = eliminado;
     }
 
-    /**
-     * CU-14 y CU-11. @param notaRespondidaId la nota que se responde (RN-30), o nulo
-     * @param clientUuid el de la app (RN-35): reenviar el mismo mensaje no lo duplica
-     */
+    /* CU-14 y CU-11 notaRespondidaId es la nota que responde o null
+       clientUuid es el de la app y reenviar el mismo mensaje no lo duplica */
     public static MensajeChat nuevo(long salaId, long autorId, String texto, String imagenId, Long notaRespondidaId,
                                     UUID clientUuid, Instant ahora) {
         return new MensajeChat(null, salaId, autorId, texto, imagenId, notaRespondidaId, ahora, clientUuid, false);
     }
 
-    /** CU-15: borrado lógico. */
+    // CU-15 borrado logico
     public void eliminar() {
         exigirVisible();
         eliminado = true;

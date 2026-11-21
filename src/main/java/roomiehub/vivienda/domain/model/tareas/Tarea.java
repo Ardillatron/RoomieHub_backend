@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.model.Periodo;
 import roomiehub.vivienda.domain.service.CalendarioDePeriodos;
 
-/** RN-13: se crea una vez con una frecuencia y se asigna al iniciar cada periodo. */
+// Se crea una vez con una frecuencia y se asigna al empezar cada periodo
 public final class Tarea {
 
     private final Long id;
@@ -18,7 +18,7 @@ public final class Tarea {
     private Frecuencia frecuencia;
     private LocalDate fechaInicio;
     private String nombre;
-    /** Opcional: null cuando no tiene. */
+    // Opcional y null cuando no tiene
     private final String descripcion;
     private ValorTarea valor;
     private boolean activa;
@@ -40,27 +40,25 @@ public final class Tarea {
         return new Tarea(null, salaId, nombre, descripcion, valor, frecuencia, fechaInicio, true);
     }
 
-    /**
-     * RN-11 y RN-12: los cambios solo cuentan para las asignaciones futuras. El valor, porque cada
-     * asignación guarda el que tenía al crearse. La frecuencia, porque el periodo en curso termina con la
-     * anterior y la nueva empieza cuando ese periodo cierra; así no se empalman dos asignaciones.
-     */
+    /* Los cambios solo cuentan para las asignaciones futuras
+       cada asignacion guarda el valor que tenia al crearse
+       la frecuencia nueva empieza cuando cierra el periodo actual para no empalmar asignaciones */
     public void editar(String nombre, ValorTarea valor, Frecuencia nuevaFrecuencia, Instant ahora, ZoneId zona) {
         this.nombre = validarNombre(nombre);
         this.valor = Objects.requireNonNull(valor, "valor");
         if (!Objects.requireNonNull(nuevaFrecuencia, "frecuencia").equals(frecuencia)) {
-            // Se calcula con la frecuencia anterior; si la tarea aún no empieza, conserva su fecha de inicio.
+            // Se calcula con la frecuencia anterior y si la tarea no empieza conserva su fecha de inicio
             fechaInicio = periodoEn(ahora, zona).map(p -> LocalDate.ofInstant(p.fin(), zona)).orElse(fechaInicio);
             frecuencia = nuevaFrecuencia;
         }
     }
 
-    /** Borrado lógico: deja de rolearse y su historial se conserva. */
+    // Borrado logico y deja de rolearse pero su historial se queda
     public void eliminar() {
         activa = false;
     }
 
-    /** El periodo de esta tarea que contiene {@code instante}, o vacío si aún no empieza. */
+    // El periodo de esta tarea que contiene el instante o vacio si aun no empieza
     public Optional<Periodo> periodoEn(Instant instante, ZoneId zona) {
         return new CalendarioDePeriodos(fechaInicio, frecuencia.paso(), zona).periodoQueContiene(instante);
     }
@@ -72,7 +70,7 @@ public final class Tarea {
         return nombre.trim();
     }
 
-    /** En blanco cuenta como sin descripción. */
+    // En blanco cuenta como sin descripcion
     private static String validarDescripcion(String descripcion) {
         if (descripcion == null || descripcion.isBlank()) {
             return null;

@@ -28,10 +28,8 @@ import org.springframework.web.client.RestClient;
 
 import roomiehub.vivienda.application.port.AlmacenamientoImagenesPort.FirmaDeSubida;
 
-/**
- * Contra la cuenta real de Cloudinary (sube una imagen de prueba y la borra):
- * {@code ./mvnw test -Dcloudinary=true -Dtest=CloudinaryIntegrationTest}. Lee CLOUDINARY_URL de local.properties.
- */
+/* Contra la cuenta real de Cloudinary sube una imagen de prueba y la borra
+   se corre con mvnw test y cloudinary en true y lee CLOUDINARY_URL de local properties */
 @EnabledIfSystemProperty(named = "cloudinary", matches = "true")
 class CloudinaryIntegrationTest {
 

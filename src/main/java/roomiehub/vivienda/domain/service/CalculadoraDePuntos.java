@@ -11,10 +11,8 @@ public final class CalculadoraDePuntos {
 
     private CalculadoraDePuntos() {}
 
-    /**
-     * RN-18: promedio de los miembros actuales más la tarea más alta, redondeado hacia arriba.
-     * El creador de la sala (sin miembros) inicia en 0; sin tareas, la más alta cuenta como 0.
-     */
+    /* Promedio de los miembros actuales mas la tarea mas alta redondeado hacia arriba
+       el creador de la sala empieza en 0 y sin tareas la mas alta cuenta como 0 */
     public static int puntajeInicial(Collection<Integer> puntajesActuales, int valorTareaMasAlta) {
         if (valorTareaMasAlta < 0 || valorTareaMasAlta > 10) {
             throw new DatoInvalidoException("Valor de tarea fuera de rango: " + valorTareaMasAlta);
@@ -25,10 +23,10 @@ public final class CalculadoraDePuntos {
         long n = puntajesActuales.size();
         long numerador = puntajesActuales.stream().mapToLong(Integer::longValue).sum()
                 + valorTareaMasAlta * n;
-        return Math.toIntExact(-Math.floorDiv(-numerador, n)); // ⌈numerador / n⌉, también con negativos
+        return Math.toIntExact(-Math.floorDiv(-numerador, n)); // division redondeada hacia arriba tambien con negativos
     }
 
-    /** RN-17: el balance visible cuenta desde el inicio del trimestre (ene, abr, jul, oct) en la zona de la sala. */
+    // El balance visible cuenta desde el inicio del trimestre en la zona de la sala
     public static Instant inicioDelTrimestre(Instant ahora, ZoneId zona) {
         LocalDate hoy = ahora.atZone(zona).toLocalDate();
         int primerMes = (hoy.getMonthValue() - 1) / 3 * 3 + 1;

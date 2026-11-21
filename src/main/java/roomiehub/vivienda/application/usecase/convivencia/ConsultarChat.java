@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomiehub.vivienda.application.usecase.sala.AccesoASala;
 import roomiehub.vivienda.domain.repository.MensajeRepository;
 
-/** RN-32: el historial se conserva mientras exista la sala; se pide por páginas, del más nuevo al más viejo. */
+// El historial se guarda mientras exista la sala y se pide por paginas del mas nuevo al mas viejo
 public class ConsultarChat {
 
     private static final int LIMITE_MAXIMO = 100;

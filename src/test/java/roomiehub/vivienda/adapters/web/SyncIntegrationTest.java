@@ -31,7 +31,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
 
-/** CU-27 por HTTP contra PostgreSQL real, con las cinco acciones de RN-34: {@code ./mvnw test -Ddb=true} */
+// CU-27 por HTTP contra PostgreSQL real con las cinco acciones con mvnw test y db en true
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -57,7 +57,7 @@ class SyncIntegrationTest {
         gasto(ana, sala, "Internet", "MENSUAL", ana, beto);
         List<Map<String, Object>> deudas = JsonPath.read(cuerpo(como(ana, get("/salas/{id}/deudas", sala), null)), "$");
         long deBeto = deudaDe(deudas, beto, "Internet"), deAna = deudaDe(deudas, ana, "Internet");
-        // Beto solo confirma lo que Ana ya avisó que pagó.
+        // Beto solo confirma lo que Ana ya aviso que pago
         como(ana, post("/deudas/{id}/aviso", deAna), null).andExpect(status().isOk());
 
         long tarea = id(como(ana, post("/salas/{id}/tareas", sala), """
@@ -65,7 +65,7 @@ class SyncIntegrationTest {
         long abierta = asignacion(ana, tarea, sala, beto, "1 hour", "-5 hours");
         long vencida = asignacion(ana, tarea, sala, beto, "8 days", "4 hours");
 
-        // ─── Sin conexión, Beto hizo esto en orden ───
+        // Sin conexion Beto hizo esto en orden
         String[] u = IntStream.range(0, 8).mapToObj(i -> UUID.randomUUID().toString()).toArray(String[]::new);
         String cola = acciones(
                 accion(u[0], "CREAR_NOTA", sala, "\"texto\":\"Desde el metro\""),
@@ -86,7 +86,7 @@ class SyncIntegrationTest {
         assertEquals("COMPLETADA", sql(ana, () -> jdbc.queryForObject(
                 "SELECT estado FROM tarea_asignaciones WHERE id = ?", String.class, abierta)));
 
-        // ─── RN-35: reenviar la misma cola no duplica nada ───
+        // Reenviar la misma cola no duplica nada
         String segunda = cuerpo(sync(beto, cola));
         assertEquals(List.of("DUPLICADA", "DUPLICADA", "DUPLICADA", "DUPLICADA", "DUPLICADA", "RECHAZADA", "RECHAZADA",
                 "RECHAZADA"), JsonPath.read(segunda, "$.resultados[*].estado"));
@@ -95,7 +95,7 @@ class SyncIntegrationTest {
                 .andExpect(jsonPath("$.recientes.length()").value(1))
                 .andExpect(jsonPath("$.recientes[0].clientUuid").value(u[0]));
 
-        // ─── Recurso eliminado mientras Beto no tenía conexión ───
+        // Recurso borrado mientras Beto no tenia conexion
         long pizza = gasto(ana, sala, "Pizza", "UNICA", ana, beto);
         long pizzaDeAna = deudaDe(JsonPath.read(cuerpo(como(ana, get("/salas/{id}/deudas", sala), null)), "$"),
                 ana, "Pizza");
@@ -103,7 +103,7 @@ class SyncIntegrationTest {
         sync(beto, acciones(accion(UUID.randomUUID().toString(), "CONFIRMAR_PAGO", sala, "\"deudaId\":" + pizzaDeAna)))
                 .andExpect(jsonPath("$.resultados[0].estado").value("RECHAZADA_RECURSO_ELIMINADO"));
 
-        // ─── RN-36: expulsado, se rechaza toda su cola de esa sala; la de su otra sala sigue ───
+        // Expulsado se rechaza su cola de esa sala y la de su otra sala sigue
         como(ana, delete("/salas/{s}/miembros/{u}", sala, beto.id()), null).andExpect(status().isNoContent());
         String tercera = cuerpo(sync(beto, acciones(
                 accion(UUID.randomUUID().toString(), "CREAR_NOTA", sala, "\"texto\":\"Ya no llega\""),
@@ -129,7 +129,7 @@ class SyncIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // ─── Ayudantes ───
+    // Ayudantes
 
     static String accion(String uuid, String tipo, long sala, String extra) {
         return "{\"uuid\":\"%s\",\"tipo\":\"%s\",\"salaId\":%d%s}".formatted(uuid, tipo, sala,

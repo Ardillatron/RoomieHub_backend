@@ -29,10 +29,10 @@ public final class Membresia {
 
     public void degradar() { rol = Rol.HABITANTE; }
 
-    /** RN-07: borrado lógico; la fila y el historial se conservan. */
+    // Borrado logico y la fila y el historial se quedan
     public void desactivar() { activo = false; }
 
-    /** RN-07: quien vuelve entra como Habitante y su antigüedad cuenta desde hoy. */
+    // Quien vuelve entra como Habitante y su antiguedad cuenta desde hoy
     public void reactivar(Instant ahora) {
         activo = true;
         rol = Rol.HABITANTE;

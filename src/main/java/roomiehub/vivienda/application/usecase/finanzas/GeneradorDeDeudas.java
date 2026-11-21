@@ -13,11 +13,9 @@ import roomiehub.vivienda.domain.repository.DeudaRepository;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 import roomiehub.vivienda.domain.service.CalculadoraDeReparto;
 
-/**
- * RN-22 y RN-23: una deuda por participante en cada periodo iniciado, con los centavos rotando. Atiende
- * también los periodos que el proceso no alcanzó (RN-41) y nunca genera dos veces el mismo periodo.
- * Corre dentro de la transacción de quien lo llama.
- */
+/* Crea una deuda por participante en cada periodo iniciado rotando los centavos
+   tambien atiende periodos atrasados y nunca genera dos veces el mismo
+   corre dentro de la transaccion de quien lo llama */
 public class GeneradorDeDeudas {
 
     private final GastoRepository gastos;
@@ -28,7 +26,7 @@ public class GeneradorDeDeudas {
         this.deudas = deudas;
     }
 
-    /** @return cuántas deudas generó */
+    // Regresa cuantas deudas genero
     public int generar(GastoCompartido gasto, ZoneId zona, Instant ahora) {
         List<Long> participantes = gastos.participantesActivos(gasto.id());
         List<Periodo> periodos = gasto.periodosIniciados(ahora, zona);
@@ -47,7 +45,7 @@ public class GeneradorDeDeudas {
                 generadas++;
             }
         }
-        // Los periodos anteriores al actual ya quedaron atendidos: la próxima vez no se revisan.
+        // Los periodos anteriores al actual ya se atendieron y no se revisan otra vez
         gasto.avanzarGeneracionHasta(LocalDate.ofInstant(periodos.get(periodos.size() - 1).inicio(), zona));
         gastos.guardar(gasto);
         return generadas;

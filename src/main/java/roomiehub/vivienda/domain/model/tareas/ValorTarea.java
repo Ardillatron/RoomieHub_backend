@@ -2,7 +2,7 @@ package roomiehub.vivienda.domain.model.tareas;
 
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 
-/** RN-11: dificultad de 1 a 10. */
+// Dificultad de 1 a 10
 public record ValorTarea(int valor) {
 
     public ValorTarea {
@@ -11,7 +11,7 @@ public record ValorTarea(int valor) {
         }
     }
 
-    /** RN-16: se restan ⌈valor / 2⌉ puntos. */
+    // Se resta la mitad del valor redondeada hacia arriba
     public int penalizacion() {
         return (valor + 1) / 2;
     }

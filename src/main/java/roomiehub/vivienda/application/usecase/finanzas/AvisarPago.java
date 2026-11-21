@@ -16,7 +16,7 @@ import roomiehub.vivienda.domain.model.finanzas.GastoCompartido;
 import roomiehub.vivienda.domain.repository.DeudaRepository;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 
-/** CU-21 y RN-26: el aviso no cambia el estado, salvo que no quede nadie más que deba confirmar. */
+// CU-21 avisar no cambia el estado salvo que no quede nadie mas que confirme
 public class AvisarPago {
 
     private final AccesoASala acceso;
@@ -57,12 +57,12 @@ public class AvisarPago {
         return deuda;
     }
 
-    /** RLS: una deuda de otra sala no se ve, así que responde igual que una inexistente. */
+    // Una deuda de otra sala no se ve por RLS y responde igual que una que no existe
     static Deuda deudaDeLaSala(DeudaRepository deudas, long deudaId) {
         return deudas.buscarPorId(deudaId).orElseThrow(() -> new RecursoNoEncontradoException("Deuda no encontrada"));
     }
 
-    /** Sección 10: "una deuda queda aprobada" se avisa a los participantes del gasto, y al deudor. */
+    // Avisa a los participantes del gasto y al deudor que la deuda quedo aprobada
     static void notificarAprobada(NotificadorPort notificador, Deuda deuda, Set<Long> activos, GastoCompartido gasto) {
         Set<Long> destinatarios = new HashSet<>(activos);
         destinatarios.add(deuda.deudorId());

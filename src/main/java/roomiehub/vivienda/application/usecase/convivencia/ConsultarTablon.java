@@ -20,13 +20,11 @@ import roomiehub.vivienda.domain.repository.ReaccionRepository;
 import roomiehub.vivienda.domain.repository.ReaccionRepository.Conteo;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** RN-30 y RN-31: en el tablón se ven las reacciones; las fijadas van arriba. */
+// En el tablon se ven las reacciones y las fijadas van arriba
 public class ConsultarTablon {
 
-    /**
-     * Imágenes firmadas, nulas si la nota no tiene: la miniatura para el tablón y la completa para la vista
-     * ampliada (en la app, el texto va al reverso de la foto).
-     */
+    /* Imagenes firmadas o null si la nota no tiene
+       la miniatura es para el tablon y la completa para ampliar */
     public record NotaVista(Nota nota, String autor, long likes, long dislikes, TipoReaccion miReaccion,
                             boolean fijada, String imagenUrl, String imagenMiniaturaUrl) {
 
@@ -39,7 +37,7 @@ public class ConsultarTablon {
         }
     }
 
-    /** {@code fijadas} solo viene en la primera página; {@code recientes} no las repite. */
+    // fijadas solo viene en la primera pagina y recientes no las repite
     public record Tablon(List<NotaVista> fijadas, List<NotaVista> recientes) {}
 
     private static final int LIMITE_MAXIMO = 100;

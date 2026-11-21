@@ -15,7 +15,7 @@ import roomiehub.vivienda.domain.exception.RecursoNoEncontradoException;
 import roomiehub.vivienda.domain.model.Periodo;
 import roomiehub.vivienda.domain.service.CalendarioDePeriodos;
 
-/** RN-21 a RN-25. Los participantes viven aparte (servicio_participantes), con su orden fijo. */
+// Gasto compartido y sus participantes van aparte con su orden fijo
 public final class GastoCompartido {
 
     private final Long id;
@@ -24,7 +24,7 @@ public final class GastoCompartido {
     private Dinero monto;
     private FrecuenciaGasto frecuencia;
     private LocalDate fechaInicio;
-    /** Primer día cuyo periodo genera deudas: salta lo que pasó con la sala desactivada (RN-41). */
+    // Primer dia cuyo periodo genera deudas y salta lo que paso con la sala desactivada
     private LocalDate generarDesde;
     private boolean eliminado;
     private Long eliminadoPor;
@@ -45,16 +45,14 @@ public final class GastoCompartido {
         this.eliminadoEn = eliminadoEn;
     }
 
-    /** CU-20. Con una fecha de inicio pasada, se generan las deudas de esos periodos (recibos reales). */
+    // CU-20 con una fecha de inicio pasada se generan las deudas de esos periodos
     public static GastoCompartido nuevo(long salaId, String concepto, Dinero monto, FrecuenciaGasto frecuencia,
                                         LocalDate fechaInicio) {
         return new GastoCompartido(null, salaId, concepto, monto, frecuencia, fechaInicio, fechaInicio, false, null, null);
     }
 
-    /**
-     * RN-24: solo afecta a los periodos futuros. Las deudas ya generadas guardan su monto, y una frecuencia
-     * nueva empieza cuando cierra el periodo en curso, como en las tareas (RN-12).
-     */
+    /* Solo cambia los periodos futuros y las deudas ya creadas guardan su monto
+       una frecuencia nueva empieza cuando cierra el periodo actual como en las tareas */
     public void editar(String concepto, Dinero monto, FrecuenciaGasto nuevaFrecuencia, Instant ahora, ZoneId zona) {
         if (monto.moneda() != this.monto.moneda()) {
             throw new DatoInvalidoException("La moneda de un gasto no se cambia: las deudas ya generadas la usan");
@@ -74,34 +72,30 @@ public final class GastoCompartido {
         }
     }
 
-    /** RN-25: borrado lógico; deja de generar periodos y su historial se conserva. */
+    // Borrado logico y deja de generar periodos pero su historial se queda
     public void eliminar(long usuarioId, Instant ahora) {
         eliminado = true;
         eliminadoPor = usuarioId;
         eliminadoEn = ahora;
     }
 
-    /** Sección 8: actuar sobre un gasto eliminado se rechaza como recurso eliminado. */
+    // Actuar sobre un gasto borrado se rechaza como recurso eliminado
     public void exigirVigente() {
         if (eliminado) {
             throw new RecursoNoEncontradoException("El gasto «" + concepto + "» fue eliminado");
         }
     }
 
-    /**
-     * Ningún periodo que empiece antes de {@code dia} genera deudas. Se usa al reactivar la sala (RN-41: lo
-     * que empezó mientras estuvo desactivada no se cobra) y tras generar, para no revisar el pasado otra vez.
-     */
+    /* Ningun periodo que empiece antes del dia dado genera deudas
+       se usa al reactivar la sala y despues de generar para no revisar el pasado */
     public void avanzarGeneracionHasta(LocalDate dia) {
         if (dia.isAfter(generarDesde)) {
             generarDesde = dia;
         }
     }
 
-    /**
-     * CU-25 y RN-41: todos los periodos ya iniciados desde {@code generarDesde}, incluidos los que el
-     * proceso no alcanzó a generar mientras estuvo dormido. Quien llama descarta los que ya tienen deudas.
-     */
+    /* CU-25 todos los periodos ya iniciados desde generarDesde incluidos los atrasados
+       quien llama descarta los que ya tienen deudas */
     public List<Periodo> periodosIniciados(Instant ahora, ZoneId zona) {
         Instant desde = generarDesde.atStartOfDay(zona).toInstant();
         Optional<Period> paso = frecuencia.paso();
@@ -119,21 +113,21 @@ public final class GastoCompartido {
         List<Periodo> periodos = new ArrayList<>();
         for (long k = primero; k <= actual.get().numero(); k++) {
             Periodo p = calendario.periodo(k);
-            if (!p.inicio().isBefore(desde)) { // uno que empezó antes de generarDesde no cuenta
+            if (!p.inicio().isBefore(desde)) { // uno que empezo antes de generarDesde no cuenta
                 periodos.add(p);
             }
         }
         return periodos;
     }
 
-    /** Número del periodo que empieza en {@code inicioPeriodo}, para rotar los centavos (RN-22). */
+    // Numero del periodo que empieza en inicioPeriodo para rotar los centavos
     public long numeroDePeriodo(LocalDate inicioPeriodo, ZoneId zona) {
         return frecuencia.paso()
                 .map(paso -> new CalendarioDePeriodos(fechaInicio, paso, zona)
                         .periodoQueContiene(inicioPeriodo.atStartOfDay(zona).toInstant())
                         .orElseThrow(() -> new IllegalArgumentException("Periodo anterior al inicio del gasto"))
                         .numero())
-                .orElse(0L); // UNICA: un solo periodo
+                .orElse(0L); // UNICA tiene un solo periodo
     }
 
     private Optional<Periodo> periodoActual(Instant ahora, ZoneId zona) {

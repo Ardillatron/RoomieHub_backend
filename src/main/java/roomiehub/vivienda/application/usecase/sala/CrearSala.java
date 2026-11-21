@@ -14,7 +14,7 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/** CU-02: RN-02, RN-03 y RN-05. El creador inicia con 0 puntos (RN-18), así que no se registra movimiento. */
+// CU-02 crea la sala y el creador empieza con 0 puntos sin movimiento
 public class CrearSala {
 
     private final SalaRepository salas;
@@ -33,7 +33,7 @@ public class CrearSala {
         salas.bloquearMembresiasDeUsuario(usuarioId);
         ReglasDeMembresia.validarLimiteDeMembresias(membresias.activasDeUsuario(usuarioId).size());
 
-        // Un código repetido choca con la restricción UNIQUE (409); con 10^12 combinaciones es improbable.
+        // Un codigo repetido choca con UNIQUE y da 409 pero es muy poco probable
         Sala sala = salas.guardar(Sala.nueva(nombre, usuarioId, zonaHoraria, CodigoInvitacion.generar(azar)));
         membresias.guardar(Membresia.nueva(usuarioId, sala.id(), Rol.ADMIN, reloj.instant()));
         return new SalaDeUsuario(sala, Rol.ADMIN, List.of());

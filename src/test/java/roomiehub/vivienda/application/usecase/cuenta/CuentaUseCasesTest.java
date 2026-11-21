@@ -78,7 +78,7 @@ class CuentaUseCasesTest {
         registrar.ejecutar("ana@mail.com", "secreta123", "Ana", null);
         assertThrows(CorreoYaRegistradoException.class, () -> registrar.ejecutar("ANA@mail.com", "otra12345", "A", null));
         assertThrows(DatoInvalidoException.class, () -> registrar.ejecutar("b@mail.com", "corta", "B", null));
-        String ñ37 = "ñ".repeat(37); // 37 caracteres pero 74 bytes: BCrypt ignoraría el final
+        String ñ37 = "ñ".repeat(37); // 37 caracteres pero 74 bytes y BCrypt ignoraria el final
         assertThrows(DatoInvalidoException.class, () -> registrar.ejecutar("b@mail.com", ñ37, "B", null));
     }
 
@@ -124,7 +124,7 @@ class CuentaUseCasesTest {
         Sesion tableta = login.ejecutar("ana@mail.com", "secreta123", null);
         Sesion rotada = renovar.ejecutar(telefono.refreshToken());
 
-        reloj.avanzar(Duration.ofSeconds(3)); // se perdió la respuesta y el teléfono reintenta
+        reloj.avanzar(Duration.ofSeconds(3)); // se perdio la respuesta y el telefono reintenta
         assertThrows(CredencialesInvalidasException.class, () -> renovar.ejecutar(telefono.refreshToken()));
         renovar.ejecutar(rotada.refreshToken());
         renovar.ejecutar(tableta.refreshToken());
@@ -152,7 +152,7 @@ class CuentaUseCasesTest {
     void cerrarSesionRevocaYToleraTokensDesconocidos() {
         Sesion s = registrar.ejecutar("ana@mail.com", "secreta123", "Ana", null);
         tokensPush.addAll(List.of("fcm-de-ana", "fcm-de-otro"));
-        cerrar.ejecutar("inventado", "fcm-de-otro"); // sin sesión válida no borra nada
+        cerrar.ejecutar("inventado", "fcm-de-otro"); // sin sesion valida no borra nada
         cerrar.ejecutar(s.refreshToken(), "fcm-de-ana");
         assertTrue(tokens.buscarPorHash(EmisorDeSesiones.hash(s.refreshToken())).orElseThrow().revocado());
         assertEquals(Set.of("fcm-de-otro"), tokensPush, "ese teléfono deja de recibir push");
@@ -165,14 +165,14 @@ class CuentaUseCasesTest {
         assertEquals("gabi", creado.nombre(), "sin nombre en el token usa la parte local del correo");
         assertEquals("gabi@gmail.com", creado.email());
 
-        // Mismo sub aunque el correo de Google haya cambiado: misma cuenta
+        // Mismo id de Google aunque el correo haya cambiado es la misma cuenta
         tokensGoogle.put("t2", new IdentidadGoogle("sub-1", "nuevo@gmail.com", true, "Gabi", null));
         assertEquals(creado.id(), conGoogle.ejecutar("t2", null).usuario().id());
     }
 
     @Test
     void googleVinculaLaCuentaDeCorreoSoloConCorreoVerificado() {
-        // Alguien registró el correo de Ana antes que ella, con su propia contraseña
+        // Alguien registro el correo de Ana antes que ella con su propia contraseña
         Sesion delIntruso = registrar.ejecutar("ana@mail.com", "secreta123", "Ana", null);
         long id = delIntruso.usuario().id();
 
@@ -183,7 +183,7 @@ class CuentaUseCasesTest {
         Usuario vinculado = conGoogle.ejecutar("verificado", null).usuario();
         assertEquals(id, vinculado.id());
         assertEquals("sub-ana", vinculado.googleSub());
-        // Al vincular, la contraseña y las sesiones que ya había dejan de servir
+        // Al vincular la contraseña y las sesiones que habia dejan de servir
         assertThrows(CredencialesInvalidasException.class, () -> login.ejecutar("ana@mail.com", "secreta123", null));
         assertThrows(CredencialesInvalidasException.class, () -> renovar.ejecutar(delIntruso.refreshToken()));
 

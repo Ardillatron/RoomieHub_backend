@@ -24,7 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
 
-/** CU-02 a CU-08 por HTTP contra PostgreSQL real, con RLS activo: {@code ./mvnw test -Ddb=true} */
+// CU-02 a CU-08 por HTTP contra PostgreSQL real con RLS activo con mvnw test y db en true
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -42,7 +42,7 @@ class SalasIntegrationTest {
     void cicloDeVidaDeUnaSala() throws Exception {
         Cuenta ana = registrar("Ana"), beto = registrar("Beto"), carla = registrar("Carla");
 
-        // ─── CU-02: Ana crea la sala y queda como Administradora ───
+        // CU-02 Ana crea la sala y queda como admin
         String creada = como(ana, post("/salas"), "{\"nombre\":\"Depa\",\"zonaHoraria\":\"America/Mexico_City\"}")
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.miRol").value("ADMIN"))
@@ -52,7 +52,7 @@ class SalasIntegrationTest {
         assertEquals(8, codigo.length());
         como(ana, get("/salas"), null).andExpect(jsonPath("$[0].id").value(sala));
 
-        // RN-18: Ana ya tiene 12 puntos y hay una tarea de valor 8
+        // Ana ya tiene 12 puntos y hay una tarea de valor 8
         sql(ana, () -> {
             jdbc.update("INSERT INTO tareas (sala_id, nombre, valor, frecuencia, fecha_inicio) "
                     + "VALUES (?, 'Lavar baños', 8, 'P7D', '2026-11-02')", sala);
@@ -60,7 +60,7 @@ class SalasIntegrationTest {
                     + "VALUES (?, ?, 12, 'INICIAL')", ana.id(), sala);
         });
 
-        // ─── CU-03: Beto y Carla se unen con el código (en minúsculas también sirve) ───
+        // CU-03 Beto y Carla se unen con el codigo y en minusculas tambien sirve
         unirse(beto, codigo.toLowerCase()).andExpect(status().isOk()).andExpect(jsonPath("$.miRol").value("HABITANTE"));
         assertEquals(20, historico(beto, sala), "promedio 12 + tarea 8 = 20");
         unirse(carla, codigo).andExpect(status().isOk());
@@ -68,28 +68,28 @@ class SalasIntegrationTest {
 
         unirse(beto, codigo).andExpect(status().isConflict());
         unirse(beto, "ZZZZ2222").andExpect(status().isNotFound());
-        // Errores del cliente que detecta Spring: 4xx, no 500
+        // Errores del cliente que detecta Spring dan 4xx y no 500
         como(beto, get("/salas/abc"), null).andExpect(status().isBadRequest());
         como(beto, get("/no-existe"), null).andExpect(status().isNotFound());
         como(beto, get("/salas/{id}", sala), null)
                 .andExpect(jsonPath("$.codigoInvitacion").value(codigo))
                 .andExpect(jsonPath("$.miembros.length()").value(3));
 
-        // ─── CU-06: solo la Administradora expulsa; el expulsado vuelve con ajuste de puntos ───
+        // CU-06 solo la admin expulsa y el expulsado vuelve con ajuste de puntos
         como(beto, delete("/salas/{s}/miembros/{u}", sala, carla.id()), null).andExpect(status().isForbidden());
         como(ana, delete("/salas/{s}/miembros/{u}", sala, beto.id()), null).andExpect(status().isNoContent());
         como(beto, get("/salas/{id}", sala), null).andExpect(status().isNotFound());
         unirse(beto, codigo).andExpect(status().isOk());
         assertEquals(26, historico(beto, sala), "ajuste a promedio (12 + 24) / 2 + 8 = 26");
 
-        // ─── RN-01: como máximo 6 personas ───
+        // Maximo 6 personas
         for (String nombre : new String[] {"Diego", "Elena", "Fer"}) {
             unirse(registrar(nombre), codigo).andExpect(status().isOk());
         }
         Cuenta gabi = registrar("Gabi");
         unirse(gabi, codigo).andExpect(status().isConflict());
 
-        // ─── RN-02: como máximo 2 membresías ───
+        // Maximo 2 membresias
         for (int i = 0; i < 2; i++) {
             como(gabi, post("/salas"), "{\"nombre\":\"Sala %d\",\"zonaHoraria\":\"America/Mexico_City\"}".formatted(i))
                     .andExpect(status().isCreated());
@@ -97,13 +97,13 @@ class SalasIntegrationTest {
         como(gabi, post("/salas"), "{\"nombre\":\"Tercera\",\"zonaHoraria\":\"America/Mexico_City\"}")
                 .andExpect(status().isConflict());
 
-        // ─── CU-07: Ana transfiere el rol a Carla ───
+        // CU-07 Ana pasa el rol a Carla
         como(ana, post("/salas/{id}/administrador", sala), "{\"usuarioId\":%d}".formatted(carla.id()))
                 .andExpect(status().isNoContent());
         como(ana, delete("/salas/{s}/miembros/{u}", sala, beto.id()), null).andExpect(status().isForbidden());
         como(carla, get("/salas/{id}", sala), null).andExpect(jsonPath("$.miRol").value("ADMIN"));
 
-        // ─── CU-08: desactivada queda en solo lectura, pero se puede salir; luego se reactiva ───
+        // CU-08 desactivada queda en solo lectura pero se puede salir y luego se reactiva
         como(beto, post("/salas/{id}/desactivar", sala), null).andExpect(status().isForbidden());
         como(carla, post("/salas/{id}/desactivar", sala), null).andExpect(status().isNoContent());
         como(carla, get("/salas/{id}", sala), null).andExpect(jsonPath("$.estado").value("DESACTIVADA"));

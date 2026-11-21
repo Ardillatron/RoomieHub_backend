@@ -14,10 +14,8 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.RefreshTokenRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/**
- * CU-31 y RN-37: sale de cada sala (RN-06, RN-08) y después borra sus datos personales.
- * Deudas, confirmaciones, puntos y mensajes se conservan y aparecen como "Usuario eliminado".
- */
+/* CU-31 sale de cada sala y luego borra sus datos personales
+   deudas puntos y mensajes se quedan como Usuario eliminado */
 public class EliminarCuenta {
 
     private final UsuarioRepository usuarios;

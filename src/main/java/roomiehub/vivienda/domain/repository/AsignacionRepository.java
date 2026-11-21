@@ -12,21 +12,19 @@ public interface AsignacionRepository {
 
     boolean existe(long tareaId, Instant periodoInicio);
 
-    /** Las que siguen en ASIGNADA, de cualquier periodo. */
+    // Las que siguen en ASIGNADA de cualquier periodo
     List<AsignacionTarea> pendientesDeSala(long salaId);
 
-    /** Las de periodos que terminaron después de {@code desde} (las actuales y las recién cerradas). */
+    // Las de periodos que terminaron despues de desde
     List<AsignacionTarea> recientesDeSala(long salaId, Instant desde);
 
-    /** Se escribe de inmediato. */
+    // Se escribe de inmediato
     void guardar(AsignacionTarea asignacion);
 
-    /** Al eliminar una tarea, sus asignaciones sin completar desaparecen y ya no se penalizan. */
+    // Al borrar una tarea sus asignaciones sin completar desaparecen y no se castigan
     void borrarPendientesDeTarea(long tareaId);
 
-    /**
-     * Al reactivar una sala (RN-41): lo que venció mientras estaba en solo lectura nadie pudo marcarlo,
-     * así que se cierra sin penalizar. Cierra las pendientes cuyo periodo terminó antes de {@code finAntesDe}.
-     */
+    /* Al reactivar una sala lo que vencio en solo lectura se cierra sin castigo
+       cierra las pendientes cuyo periodo termino antes de finAntesDe */
     void vencerSinPenalizar(long salaId, Instant finAntesDe);
 }

@@ -1,6 +1,6 @@
 package roomiehub.vivienda.adapters.web;
 
-/** Se respondió 429: la cuenta acumuló demasiados intentos fallidos de inicio de sesión. */
+// Responde 429 cuando la cuenta tiene demasiados intentos fallidos de login
 public class DemasiadosIntentosException extends RuntimeException {
 
     private final long segundos;

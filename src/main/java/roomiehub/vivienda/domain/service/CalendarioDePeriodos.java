@@ -10,11 +10,9 @@ import java.util.Optional;
 
 import roomiehub.vivienda.domain.model.Periodo;
 
-/**
- * RN-38 y RN-40: los periodos empiezan a las 00:00 de la zona de la sala. El periodo k empieza en
- * fechaInicio + k pasos, calculado siempre desde la fecha de inicio: un inicio el día 31 cae el 30
- * en abril y vuelve al 31 en mayo.
- */
+/* Los periodos empiezan a las 00 00 en la zona de la sala
+   el periodo k se calcula siempre desde la fecha de inicio
+   un inicio el dia 31 cae el 30 en abril y vuelve al 31 en mayo */
 public final class CalendarioDePeriodos {
 
     private final LocalDate fechaInicio;
@@ -37,7 +35,7 @@ public final class CalendarioDePeriodos {
         return new Periodo(numero, inicioInstante(numero), inicioInstante(numero + 1));
     }
 
-    /** Vacío si el instante es anterior a la fecha de inicio. */
+    // Vacio si el instante es antes de la fecha de inicio
     public Optional<Periodo> periodoQueContiene(Instant instante) {
         LocalDate dia = instante.atZone(zona).toLocalDate();
         if (dia.isBefore(fechaInicio)) {

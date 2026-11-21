@@ -21,7 +21,7 @@ import roomiehub.vivienda.domain.exception.DomainException;
 import roomiehub.vivienda.domain.exception.OperacionNoPermitidaException;
 import roomiehub.vivienda.domain.exception.RecursoNoEncontradoException;
 
-/** Traduce las reglas de negocio violadas a HTTP, sin que el dominio conozca HTTP (RFC 9457). */
+// Convierte los errores de negocio a respuestas HTTP sin que el dominio sepa de HTTP
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -58,22 +58,22 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "El cuerpo de la petición no es JSON válido");
     }
 
-    // Un id o enum mal escrito en la ruta o en la query: /salas/abc, ?estado=XYZ
+    // Un id o enum mal escrito en la ruta o en la query
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     ProblemDetail tipoInvalido(MethodArgumentTypeMismatchException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getName() + ": valor inválido");
     }
 
-    // Dos peticiones simultáneas que chocan con una restricción única (por ejemplo, el mismo correo).
+    // Dos peticiones al mismo tiempo que chocan con una restriccion unica como el mismo correo
     @ExceptionHandler(DataIntegrityViolationException.class)
     ProblemDetail conflicto(DataIntegrityViolationException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "El recurso ya existe o cambió; intenta de nuevo");
     }
 
-    // Sin detalles internos en la respuesta: van al log.
+    // No manda detalles internos y van al log
     @ExceptionHandler(Exception.class)
     ResponseEntity<ProblemDetail> inesperado(Exception e) {
-        // Las de Spring (ruta inexistente, parámetro faltante, método no permitido) ya traen su 4xx.
+        // Los errores de Spring ya traen su codigo 4xx
         if (e instanceof ErrorResponse respuesta) {
             return ResponseEntity.status(respuesta.getStatusCode()).headers(respuesta.getHeaders())
                     .body(respuesta.getBody());
@@ -88,8 +88,7 @@ public class GlobalExceptionHandler {
         if (e instanceof OperacionNoPermitidaException) return HttpStatus.FORBIDDEN;
         if (e instanceof DatoInvalidoException) return HttpStatus.BAD_REQUEST;
         if (e instanceof RecursoNoEncontradoException) return HttpStatus.NOT_FOUND;
-        // CorreoYaRegistrado, CapacidadExcedida, LimiteMembresias, DeudaCerrada, ConflictoDeEstado:
-        // el estado actual no permite la acción
+        // El estado actual no permite la accion
         return HttpStatus.CONFLICT;
     }
 }

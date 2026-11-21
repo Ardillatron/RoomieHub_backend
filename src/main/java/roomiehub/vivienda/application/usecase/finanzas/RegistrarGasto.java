@@ -22,10 +22,10 @@ import roomiehub.vivienda.domain.model.sala.Sala;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 import roomiehub.vivienda.domain.repository.MembresiaRepository;
 
-/** CU-20 (crear): RN-21. Las deudas de los periodos ya iniciados se generan de inmediato. */
+// CU-20 crear y las deudas de los periodos ya iniciados se generan de inmediato
 public class RegistrarGasto {
 
-    /** Con una fecha muy vieja se generaría un historial enorme de deudas de golpe. */
+    // Con una fecha muy vieja se crearian muchas deudas de golpe
     private static final int MAXIMO_DIAS_ATRAS = 365;
 
     private final AccesoASala acceso;
@@ -65,7 +65,7 @@ public class RegistrarGasto {
         return gasto;
     }
 
-    /** Al menos uno, sin repetidos y todos miembros activos de la sala. Conserva el orden recibido (RN-22). */
+    // Al menos uno sin repetidos y todos miembros activos y se conserva el orden
     static List<Long> validarParticipantes(List<Membresia> miembros, List<Long> participantes) {
         if (participantes == null || participantes.isEmpty()) {
             throw new DatoInvalidoException("Un gasto necesita al menos un participante");

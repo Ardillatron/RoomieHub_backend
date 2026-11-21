@@ -31,10 +31,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
 
-/**
- * CU-16 a CU-19 por HTTP y CU-23/CU-24 por el endpoint del disparador externo, que procesa cada sala con
- * el rol app_scheduler: {@code ./mvnw test -Ddb=true}
- */
+/* CU-16 a CU-19 por HTTP y CU-23 y CU-24 por el disparador externo
+   que procesa cada sala con el rol app_scheduler y se corre con mvnw test y db en true */
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -59,7 +57,7 @@ class TareasIntegrationTest {
             como(c, post("/salas/unirse"), "{\"codigo\":\"%s\"}".formatted(codigo)).andExpect(status().isOk());
         }
 
-        // ─── CU-16: solo la Administradora crea tareas ───
+        // CU-16 solo la admin crea tareas
         crearTarea(beto, sala, "Barrer", 5, "P7D").andExpect(status().isForbidden());
         long banos = id(crearTarea(ana, sala, "Lavar baños", 8, "P7D").andExpect(status().isCreated()));
         long barrer = id(crearTarea(ana, sala, "Barrer", 5, "P7D"));
@@ -68,7 +66,7 @@ class TareasIntegrationTest {
         crearTarea(ana, sala, "Cada 400 días", 5, "P400D").andExpect(status().isBadRequest());
         como(carla, get("/salas/{id}/tareas", sala), null).andExpect(jsonPath("$.length()").value(3));
 
-        // ─── CU-23: el disparador externo rolea; repetirlo no duplica nada ───
+        // CU-23 el disparador externo rolea y repetirlo no duplica nada
         jobs("secreto-de-prueba").andExpect(status().isNoContent());
         jobs("secreto-de-prueba").andExpect(status().isNoContent());
         List<Map<String, Object>> asignadas = asignaciones(ana, sala);
@@ -77,7 +75,7 @@ class TareasIntegrationTest {
         assertNotEquals(de(asignadas, banos).get("usuarioId"), de(asignadas, barrer).get("usuarioId"),
                 "con todos empatados, las dos semanales van a personas distintas");
 
-        // ─── CU-17: solo el responsable marca, una vez ───
+        // CU-17 solo el responsable marca y una sola vez
         Map<String, Object> deBanos = de(asignadas, banos);
         long responsable = ((Number) deBanos.get("usuarioId")).longValue();
         Cuenta quien = List.of(ana, beto, carla).stream().filter(c -> c.id() == responsable).findFirst().orElseThrow();
@@ -88,18 +86,18 @@ class TareasIntegrationTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.estado").value("COMPLETADA"));
         como(quien, post("/asignaciones/{id}/completar", asignacionBanos), null).andExpect(status().isConflict());
 
-        // ─── CU-18: balance visible e histórico ───
+        // CU-18 balance visible e historico
         como(otro, get("/salas/{id}/balance", sala), null)
                 .andExpect(jsonPath("$[?(@.usuarioId == %d)].visible".formatted(quien.id())).value(8))
                 .andExpect(jsonPath("$[?(@.usuarioId == %d)].historico".formatted(quien.id())).value(8));
 
-        // ─── RN-12: editar el valor no cambia la asignación ya creada ───
+        // Editar el valor no cambia la asignacion ya creada
         como(ana, put("/salas/{s}/tareas/{t}", sala, banos),
                 "{\"nombre\":\"Lavar baños\",\"valor\":9,\"frecuencia\":\"P7D\"}")
                 .andExpect(status().isOk()).andExpect(jsonPath("$.valor").value(9));
         assertEquals(8, de(asignaciones(ana, sala), banos).get("valor"));
 
-        // ─── Cambiar la frecuencia: la nueva empieza cuando cierra la semana en curso, sin empalmarse ───
+        // Al cambiar la frecuencia la nueva empieza cuando cierra la semana actual sin empalmarse
         String finDeSemana = LocalDate.parse(hoy).plusDays(7).toString();
         como(ana, put("/salas/{s}/tareas/{t}", sala, barrer),
                 "{\"nombre\":\"Barrer\",\"valor\":5,\"frecuencia\":\"P1D\"}")
@@ -113,7 +111,7 @@ class TareasIntegrationTest {
         como(ana, put("/salas/{s}/tareas/{t}", sala, barrer), "{\"nombre\":\"Barrer\",\"valor\":5}")
                 .andExpect(status().isBadRequest());
 
-        // ─── CU-24 y RN-16: 3 horas de gracia tras el cierre; después vence y resta ⌈5 / 2⌉ = 3 ───
+        // CU-24 3 horas de gracia tras el cierre y luego vence y resta 3 que es la mitad de 5 hacia arriba
         long vencidaDeCarla = insertarAsignacion(ana, barrer, sala, carla.id(), "8 days", "4 hours");
         long enGraciaDeBeto = insertarAsignacion(ana, barrer, sala, beto.id(), "9 days", "2 hours");
         como(beto, post("/asignaciones/{id}/completar", enGraciaDeBeto), null).andExpect(status().isOk());
@@ -125,13 +123,13 @@ class TareasIntegrationTest {
                 "SELECT sum(puntos) FROM movimientos_puntos WHERE usuario_id = ? AND tipo = 'PENALIZACION'",
                 Long.class, carla.id())));
 
-        // ─── CU-16: eliminar quita sus asignaciones pendientes ───
+        // CU-16 borrar quita sus asignaciones pendientes
         como(ana, delete("/salas/{s}/tareas/{t}", sala, basura), null).andExpect(status().isNoContent());
         como(ana, get("/salas/{id}/tareas", sala), null).andExpect(jsonPath("$.length()").value(2));
         assertTrue(asignaciones(ana, sala).stream().noneMatch(a -> ((Number) a.get("tareaId")).longValue() == basura
                 && "ASIGNADA".equals(a.get("estado"))));
 
-        // ─── CU-19: lo de Beto queda sin asignar al salir y la Administradora lo reparte ───
+        // CU-19 lo de Beto queda sin asignar al salir y la admin lo reparte
         long abiertaDeBeto = insertarAsignacion(ana, barrer, sala, beto.id(), "1 hour", "-5 hours");
         como(beto, delete("/salas/{id}/membresia", sala), null).andExpect(status().isNoContent());
         como(carla, post("/salas/{id}/asignaciones/reasignar", sala), null).andExpect(status().isForbidden());
@@ -148,7 +146,7 @@ class TareasIntegrationTest {
         jobs("otro").andExpect(status().isForbidden());
     }
 
-    // ─── Ayudantes ───
+    // Ayudantes
 
     ResultActions crearTarea(Cuenta c, long sala, String nombre, int valor, String frecuencia) throws Exception {
         return como(c, post("/salas/{id}/tareas", sala),
@@ -156,7 +154,7 @@ class TareasIntegrationTest {
                         .formatted(nombre, valor, frecuencia, hoy));
     }
 
-    /** Una asignación que empezó hace {@code inicio} y terminó hace {@code fin} (negativo = termina en el futuro). */
+    // Una asignacion que empezo hace inicio y termino hace fin y negativo termina en el futuro
     long insertarAsignacion(Cuenta c, long tarea, long sala, long usuario, String inicio, String fin) {
         return sql(c, () -> jdbc.queryForObject("""
                 INSERT INTO tarea_asignaciones (tarea_id, sala_id, usuario_id, periodo_inicio, periodo_fin, valor_al_asignar)
@@ -169,7 +167,7 @@ class TareasIntegrationTest {
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), "$");
     }
 
-    /** La asignación del periodo actual de esa tarea (las vencidas se ignoran). */
+    // La asignacion del periodo actual de esa tarea sin las vencidas
     static Map<String, Object> de(List<Map<String, Object>> asignaciones, long tareaId) {
         return asignaciones.stream()
                 .filter(a -> ((Number) a.get("tareaId")).longValue() == tareaId && !"VENCIDA".equals(a.get("estado")))

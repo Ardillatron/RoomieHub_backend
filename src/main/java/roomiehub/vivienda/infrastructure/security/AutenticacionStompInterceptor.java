@@ -12,14 +12,12 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-/**
- * Sección 9: el JWT se valida en el CONNECT de STOMP (el handshake HTTP no lleva encabezados desde el
- * teléfono). Cada quien solo puede suscribirse a su propia cola; nadie publica: los mensajes entran por REST.
- */
+/* El JWT se valida en el CONNECT de STOMP porque el handshake no lleva encabezados
+   cada quien solo se suscribe a su cola y nadie publica porque los mensajes entran por REST */
 @Component
 public class AutenticacionStompInterceptor implements ChannelInterceptor {
 
-    /** La única suscripción permitida; Spring la traduce a la cola privada del usuario conectado. */
+    // La unica suscripcion permitida y Spring la manda a la cola del usuario conectado
     public static final String COLA_DEL_CHAT = "/user/queue/chat";
 
     private final JwtDecoder jwtDecoder;
@@ -52,8 +50,8 @@ public class AutenticacionStompInterceptor implements ChannelInterceptor {
             throw new MessageDeliveryException("Falta el JWT en el encabezado Authorization del CONNECT");
         }
         try {
-            // shortcut: el JWT se revisa al conectar y la conexión sigue aunque expire después; lo que se entrega
-            // ya se limita a los miembros activos de cada sala.
+            /* shortcut el JWT se revisa al conectar y la conexion sigue aunque expire
+               lo que se entrega ya se limita a los miembros activos de cada sala */
             return new JwtAuthenticationToken(jwtDecoder.decode(encabezado.substring("Bearer ".length())));
         } catch (JwtException e) {
             throw new MessageDeliveryException("JWT inválido");

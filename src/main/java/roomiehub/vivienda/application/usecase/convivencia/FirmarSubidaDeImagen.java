@@ -9,10 +9,8 @@ import roomiehub.vivienda.application.port.AlmacenamientoImagenesPort.FirmaDeSub
 import roomiehub.vivienda.application.usecase.sala.AccesoASala;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 
-/**
- * Sección 8: la nota (o el mensaje) con imagen primero sube la imagen y después se envía con su id.
- * Cada sala tiene su carpeta, así que una imagen solo puede usarse en la sala para la que se firmó.
- */
+/* La nota o mensaje con imagen primero sube la imagen y luego se envia con su id
+   cada sala tiene su carpeta y una imagen solo sirve en su sala */
 public class FirmarSubidaDeImagen {
 
     private static final Pattern UUID = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
@@ -31,7 +29,7 @@ public class FirmarSubidaDeImagen {
         return almacenamiento.firmarSubida(carpeta(salaId));
     }
 
-    /** Rechaza ids inventados o firmados para otra sala. */
+    // Rechaza ids inventados o firmados para otra sala
     public static void exigirImagenDeLaSala(String imagenId, long salaId) {
         String prefijo = carpeta(salaId) + "/";
         if (!imagenId.startsWith(prefijo) || !UUID.matcher(imagenId.substring(prefijo.length())).matches()) {

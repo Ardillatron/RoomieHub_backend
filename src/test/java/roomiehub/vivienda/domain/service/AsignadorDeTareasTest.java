@@ -36,7 +36,7 @@ class AsignadorDeTareasTest {
             ganadoresDeBasura.add(r.get(BASURA));
             assertEquals(List.of(BANOS, BARRER, BASURA), List.copyOf(r.keySet()), "de mayor a menor valor");
         }
-        // Elena (15 + 8 = 23) y Ana (23) empatan: el sorteo debe poder dar a cualquiera de las dos.
+        // Elena con 15 mas 8 da 23 y Ana con 23 empatan y el sorteo puede dar a cualquiera
         assertEquals(Set.of(ELENA, ANA), ganadoresDeBasura);
     }
 

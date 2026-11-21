@@ -6,7 +6,7 @@ import roomiehub.vivienda.application.usecase.sala.AccesoASala;
 import roomiehub.vivienda.domain.model.convivencia.Nota;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 
-/** CU-13: solo el Administrador; borrado lógico, sus reportes se conservan. */
+// CU-13 solo el admin borra la nota y sus reportes se quedan
 public class EliminarNota {
 
     private final AccesoASala acceso;

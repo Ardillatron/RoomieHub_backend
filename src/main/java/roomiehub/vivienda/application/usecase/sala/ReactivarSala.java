@@ -18,7 +18,7 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/** CU-08 y RN-09: dentro de los 15 días. Los periodos en que estuvo desactivada no se recuperan (RN-41). */
+// CU-08 reactiva dentro de los 15 dias y los periodos desactivados no se recuperan
 public class ReactivarSala {
 
     private final SalaRepository salas;
@@ -46,9 +46,9 @@ public class ReactivarSala {
         Sala sala = salas.buscarPorId(salaId).orElseThrow();
         sala.reactivar(ahora);
         salas.guardar(sala);
-        // En solo lectura nadie pudo marcar sus tareas: lo que venció en ese tiempo no se penaliza.
+        // En solo lectura nadie pudo marcar tareas y lo que vencio no se penaliza
         asignaciones.vencerSinPenalizar(salaId, ahora.minus(AsignacionTarea.GRACIA));
-        // Los periodos de gastos que empezaron mientras estuvo desactivada no generan deudas.
+        // Los periodos de gastos que empezaron desactivada no generan deudas
         LocalDate hoy = LocalDate.ofInstant(ahora, sala.zonaHoraria());
         for (GastoCompartido gasto : gastos.vigentesDeSala(salaId)) {
             gasto.avanzarGeneracionHasta(hoy);

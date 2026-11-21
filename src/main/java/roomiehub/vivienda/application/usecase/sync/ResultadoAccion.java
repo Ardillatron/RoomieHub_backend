@@ -2,21 +2,21 @@ package roomiehub.vivienda.application.usecase.sync;
 
 import java.util.UUID;
 
-/** Sección 8: lo que el servidor responde por cada acción de la cola. */
+// Lo que responde el servidor por cada accion de la cola
 public record ResultadoAccion(UUID uuid, Estado estado, String motivo, Long recursoId) {
 
     public enum Estado {
-        /** Se aplicó. {@code recursoId}: la nota o el mensaje creado. La app la quita de la cola. */
+        // Se aplico y recursoId es la nota o mensaje creado y la app la quita de la cola
         PROCESADA,
-        /** El UUID ya se había procesado; cuenta como éxito y la app la quita de la cola. */
+        // El UUID ya se habia procesado y cuenta como exito y la app la quita
         DUPLICADA,
-        /** El recurso se eliminó (por ejemplo, el gasto). La app muestra el error y la quita. */
+        // El recurso se borro y la app muestra el error y la quita
         RECHAZADA_RECURSO_ELIMINADO,
-        /** El usuario ya no es miembro: se rechaza toda la cola de esa sala y la app borra su caché (RN-36). */
+        // El usuario ya no es miembro y se rechaza toda la cola de esa sala y la app borra su cache
         RECHAZADA_EXPULSION,
-        /** Violó otra regla (por ejemplo, marcar una tarea fuera de plazo). La app muestra el error y la quita. */
+        // Rompio otra regla y la app muestra el error y la quita
         RECHAZADA,
-        /** Falla inesperada del servidor: la app la conserva y la reintenta después, para no perderla. */
+        // Error del servidor y la app la guarda para reintentar despues
         ERROR
     }
 

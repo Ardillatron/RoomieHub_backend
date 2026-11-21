@@ -32,7 +32,7 @@ public class TareaJpaEntity {
     @Column(nullable = false)
     private Short valor;
 
-    /** Periodo ISO-8601: P3D, P1M. */
+    // Periodo ISO 8601 como P3D o P1M
     @Column(nullable = false)
     private String frecuencia;
 

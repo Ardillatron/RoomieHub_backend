@@ -27,17 +27,13 @@ import roomiehub.vivienda.application.usecase.convivencia.MensajeVista;
 import roomiehub.vivienda.application.usecase.convivencia.ReportarMensaje;
 import roomiehub.vivienda.domain.model.convivencia.MensajeChat;
 
-/**
- * CU-11, CU-14, CU-15 y CU-32. Los mensajes se envían aquí y llegan en vivo por STOMP: conectarse a /ws
- * con "Authorization: Bearer {jwt}" en el CONNECT y suscribirse a /user/queue/chat.
- */
+/* CU-11 CU-14 CU-15 y CU-32 chat de la sala
+   los mensajes se envian aqui y llegan en vivo por STOMP en /ws con el JWT en el CONNECT */
 @RestController
 public class ChatController {
 
-    /**
-     * Texto, imagen o ambos. {@code notaRespondidaId}: para responder una nota del tablón (RN-30).
-     * {@code clientUuid}: lo genera la app (RN-35); reenviar con el mismo no duplica el mensaje.
-     */
+    /* Texto imagen o ambos y notaRespondidaId para responder una nota
+       clientUuid lo genera la app y reenviar con el mismo no duplica el mensaje */
     public record EnviarMensajeRequest(@Size(max = 4000) String texto, @Size(max = 200) String imagenId,
                                        Long notaRespondidaId, UUID clientUuid) {}
 
@@ -70,7 +66,7 @@ public class ChatController {
         this.reportarMensaje = reportarMensaje;
     }
 
-    /** Del más nuevo al más viejo; para los anteriores, {@code antesDe} = el id más viejo que ya se tiene. */
+    // Del mas nuevo al mas viejo y antesDe es el id mas viejo que ya se tiene
     @GetMapping("/salas/{salaId}/mensajes")
     public List<MensajeResponse> historial(@AuthenticationPrincipal Jwt jwt, @PathVariable long salaId,
                                            @RequestParam(required = false) Long antesDe,

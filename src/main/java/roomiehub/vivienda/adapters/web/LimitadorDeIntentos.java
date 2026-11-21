@@ -5,10 +5,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Ventana fija por clave: como mucho {@code maximo} eventos cada {@code ventana}.
- * shortcut: vive en la memoria de una sola instancia; con varias instancias, pasar a un almacén compartido.
- */
+/* Ventana fija por clave con un maximo de eventos por ventana
+   shortcut vive en memoria de una sola instancia y con varias hay que usar un almacen compartido */
 public class LimitadorDeIntentos {
 
     private record Cuenta(Instant inicio, int eventos) {}
@@ -26,7 +24,7 @@ public class LimitadorDeIntentos {
         this.reloj = reloj;
     }
 
-    /** Registra un evento. @return segundos que faltan para poder reintentar, o 0 si se permitió. */
+    // Registra un evento y regresa los segundos para reintentar o 0 si se permitio
     public long registrar(String clave) {
         Instant ahora = reloj.instant();
         if (cuentas.size() > LIMPIAR_DESDE) {
@@ -37,7 +35,7 @@ public class LimitadorDeIntentos {
         return cuenta.eventos() > maximo ? espera(cuenta, ahora) : 0;
     }
 
-    /** @return segundos que faltan si la clave ya agotó su ventana, o 0 si no. No registra nada. */
+    // Regresa los segundos que faltan si la clave ya se lleno o 0 si no y no registra nada
     public long bloqueadoPor(String clave) {
         Instant ahora = reloj.instant();
         Cuenta cuenta = cuentas.get(clave);

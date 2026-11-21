@@ -28,7 +28,7 @@ public interface DispositivoJpaRepository extends JpaRepository<DispositivoJpaEn
     @Query("SELECT d.fcmToken FROM DispositivoJpaEntity d WHERE d.usuarioId IN :usuarios")
     List<String> tokensDe(Collection<Long> usuarios);
 
-    // Con su propia transacción: el notificador lo llama desde su hilo, fuera de la del caso de uso.
+    // Con su propia transaccion porque el notificador lo llama desde su hilo
     @Transactional
     @Modifying
     @Query("DELETE FROM DispositivoJpaEntity d WHERE d.fcmToken = :fcmToken")

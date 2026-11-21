@@ -10,11 +10,8 @@ import roomiehub.vivienda.domain.repository.AsignacionRepository;
 import roomiehub.vivienda.domain.repository.PuntosRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 
-/**
- * CU-24 (Sistema): RN-16. Vence lo no marcado 3 horas después del cierre de su periodo y resta ⌈valor / 2⌉.
- * Atiende todos los periodos vencidos, no solo el último, por si el proceso se atrasó. Pausado en una
- * sala desactivada (RN-09).
- */
+/* CU-24 vence lo no marcado 3 horas despues del cierre y resta la mitad del valor
+   atiende todos los periodos vencidos por si el proceso se atraso y se pausa en sala desactivada */
 public class PenalizarVencidas {
 
     private final SalaRepository salas;

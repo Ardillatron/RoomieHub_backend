@@ -48,7 +48,7 @@ class CalendarioDePeriodosTest {
 
     @Test
     void usaLaZonaDeLaSalaNoUtc() {
-        // 2026-10-06 03:00 UTC sigue siendo 5 de octubre en CDMX (UTC-6).
+        // 6 de octubre a las 03 00 UTC sigue siendo 5 de octubre en CDMX
         var cal = new CalendarioDePeriodos(LocalDate.of(2026, 10, 1), Frecuencia.DIARIA.paso(), CDMX);
         assertEquals(4, cal.periodoQueContiene(Instant.parse("2026-10-06T03:00:00Z")).orElseThrow().numero());
     }
@@ -58,14 +58,14 @@ class CalendarioDePeriodosTest {
         var cal = new CalendarioDePeriodos(LocalDate.of(2026, 1, 15),
                 FrecuenciaGasto.BIMESTRAL.paso().orElseThrow(), CDMX);
         Periodo p = cal.periodoQueContiene(local("2028-06-01T12:00", CDMX)).orElseThrow();
-        assertEquals(14, p.numero()); // 28 meses después
+        assertEquals(14, p.numero()); // 28 meses despues
 
         assertEquals(local("2028-05-15T00:00", CDMX), p.inicio());
     }
 
     @Test
     void cambioDeHorarioNoRompeLosLimites() {
-        ZoneId nuevaYork = ZoneId.of("America/New_York"); // 2026-03-08 adelanta una hora
+        ZoneId nuevaYork = ZoneId.of("America/New_York"); // el 8 de marzo de 2026 se adelanta una hora
         var cal = new CalendarioDePeriodos(LocalDate.of(2026, 3, 1), Frecuencia.DIARIA.paso(), nuevaYork);
         Periodo p = cal.periodo(7);
         assertEquals(local("2026-03-08T00:00", nuevaYork), p.inicio());

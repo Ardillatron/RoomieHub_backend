@@ -25,10 +25,8 @@ import roomiehub.vivienda.domain.repository.TareaRepository;
 import roomiehub.vivienda.domain.service.AsignadorDeTareas;
 import roomiehub.vivienda.domain.service.AsignadorDeTareas.TareaARolear;
 
-/**
- * CU-23 (Sistema): RN-13, RN-14 y sección 6. Asigna solo el periodo actual de cada tarea (RN-41): si el
- * proceso se atrasó, los periodos que nadie vio no se crean. Una sala desactivada no rolea (RN-09).
- */
+/* CU-23 asigna solo el periodo actual de cada tarea
+   si el proceso se atraso los periodos que nadie vio no se crean y una sala desactivada no rolea */
 public class RolearTareas {
 
     private record PorRolear(Tarea tarea, Periodo periodo) {}
@@ -59,7 +57,7 @@ public class RolearTareas {
         if (sala.estado() == EstadoSala.DESACTIVADA) {
             return;
         }
-        // Cada frecuencia tiene su propio roleo, y todos leen el mismo histórico (sección 6).
+        // Cada frecuencia tiene su roleo y todos leen el mismo historico
         Map<Frecuencia, List<PorRolear>> porFrecuencia = new LinkedHashMap<>();
         for (Tarea tarea : tareas.activasDeSala(salaId)) {
             tarea.periodoEn(ahora, sala.zonaHoraria())
@@ -78,7 +76,7 @@ public class RolearTareas {
             Map<Long, Long> responsables = asignador.asignar(
                     grupo.stream().map(r -> new TareaARolear(r.tarea().id(), r.tarea().valor())).toList(), puntajes);
             for (PorRolear r : grupo) {
-                Long responsable = responsables.get(r.tarea().id()); // nulo si la sala no tiene miembros
+                Long responsable = responsables.get(r.tarea().id()); // null si la sala no tiene miembros
                 asignaciones.guardar(AsignacionTarea.nueva(r.tarea(), r.periodo(), responsable));
                 if (responsable != null) {
                     notificador.notificar(List.of(responsable), "Nueva tarea", r.tarea().nombre());

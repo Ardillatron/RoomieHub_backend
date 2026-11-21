@@ -4,7 +4,7 @@ import java.time.Clock;
 
 import org.springframework.transaction.annotation.Transactional;
 
-/** CU-05. También se permite en una sala desactivada, para no quedar atado al límite de RN-02. */
+// CU-05 tambien se permite en una sala desactivada para no quedar atado al limite
 public class AbandonarSala {
 
     private final SalidaDeMiembro salida;

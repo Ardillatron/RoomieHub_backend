@@ -11,10 +11,8 @@ import roomiehub.vivienda.domain.model.finanzas.GastoCompartido;
 import roomiehub.vivienda.domain.repository.DeudaRepository;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 
-/**
- * CU-22 y CU-26: RN-26. Cuenta aunque el deudor aún no haya avisado; con la última confirmación
- * requerida, la deuda pasa a Aprobada.
- */
+/* CU-22 y CU-26 la confirmacion cuenta aunque el deudor no haya avisado
+   con la ultima confirmacion la deuda pasa a Aprobada */
 public class ConfirmarPago {
 
     private final AccesoASala acceso;

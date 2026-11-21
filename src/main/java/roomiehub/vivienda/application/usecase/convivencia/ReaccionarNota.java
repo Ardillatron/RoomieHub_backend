@@ -9,7 +9,7 @@ import roomiehub.vivienda.domain.model.convivencia.TipoReaccion;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 import roomiehub.vivienda.domain.repository.ReaccionRepository;
 
-/** CU-10: RN-29, like o dislike; reaccionar otra vez cambia el tipo y se puede quitar. */
+// CU-10 like o dislike y reaccionar otra vez cambia el tipo o lo quita
 public class ReaccionarNota {
 
     private final AccesoASala acceso;
@@ -36,7 +36,7 @@ public class ReaccionarNota {
         reacciones.quitar(notaId, usuarioId);
     }
 
-    /** RLS: una nota de otra sala no se ve, así que responde igual que una eliminada o inexistente. */
+    // Una nota de otra sala no se ve por RLS y responde igual que una que no existe
     static Nota notaVisible(NotaRepository notas, long notaId) {
         Nota nota = notas.buscarPorId(notaId).orElseThrow(() -> new RecursoNoEncontradoException("Nota no encontrada"));
         nota.exigirVisible();

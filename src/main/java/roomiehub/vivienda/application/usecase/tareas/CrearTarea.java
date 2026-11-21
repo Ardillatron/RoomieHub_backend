@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.model.tareas.Tarea;
 import roomiehub.vivienda.domain.model.tareas.ValorTarea;
 import roomiehub.vivienda.domain.repository.TareaRepository;
 
-/** CU-16: RN-11 y RN-13. Se asigna en el siguiente roleo (como mucho 15 minutos después). */
+// CU-16 crea una tarea y se asigna en la siguiente vuelta en maximo 15 minutos
 public class CrearTarea {
 
     private final AccesoASala acceso;

@@ -15,7 +15,7 @@ import roomiehub.vivienda.domain.model.sala.Rol;
 import roomiehub.vivienda.domain.repository.MensajeRepository;
 import roomiehub.vivienda.domain.repository.ReporteRepository;
 
-/** CU-32: RN-29, el reporte llega al Administrador. */
+// CU-32 el reporte del mensaje le llega al admin
 public class ReportarMensaje {
 
     private final AccesoASala acceso;
@@ -46,7 +46,7 @@ public class ReportarMensaje {
         return reporte;
     }
 
-    /** RLS: un mensaje de otra sala no se ve, así que responde igual que uno eliminado o inexistente. */
+    // Un mensaje de otra sala no se ve por RLS y responde igual que uno que no existe
     static MensajeChat mensajeVisible(MensajeRepository mensajes, long mensajeId) {
         MensajeChat mensaje = mensajes.buscarPorId(mensajeId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Mensaje no encontrado"));

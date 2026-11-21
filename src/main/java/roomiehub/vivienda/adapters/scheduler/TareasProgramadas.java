@@ -7,11 +7,9 @@ import org.springframework.stereotype.Component;
 
 import roomiehub.vivienda.domain.repository.SalaRepository;
 
-/**
- * CU-23, CU-24, CU-25, CU-29, CU-30 y los recordatorios de la sección 10. Corre con el cron mientras la instancia está despierta, y también cuando un
- * disparador externo llama a POST /internal/jobs/ejecutar (sección 12), porque un @Scheduled no despierta
- * una instancia dormida. Los procesos son idempotentes, así que coincidir no duplica nada.
- */
+/* Corre los procesos programados de tareas deudas notas salas y recordatorios
+   corre con el cron y tambien cuando el disparador externo llama a POST /internal/jobs/ejecutar
+   los procesos son idempotentes y si coinciden no duplican nada */
 @Component
 public class TareasProgramadas {
 
@@ -25,7 +23,7 @@ public class TareasProgramadas {
         this.procesador = procesador;
     }
 
-    /** @return cuántas salas fallaron */
+    // Regresa cuantas salas fallaron
     @Scheduled(cron = "${app.jobs.cron:0 */15 * * * *}")
     public int ejecutar() {
         int fallidas = 0;
@@ -33,7 +31,7 @@ public class TareasProgramadas {
             try {
                 procesador.procesar(salaId);
             } catch (Exception e) {
-                // Una sala con error no detiene a las demás.
+                // Si una sala falla las demas siguen
                 fallidas++;
                 log.error("Falló el procesamiento de la sala {}", salaId, e);
             }

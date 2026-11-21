@@ -11,10 +11,8 @@ public interface RefreshTokenRepository {
 
     Optional<RefreshToken> buscarPorHash(String tokenHash);
 
-    /**
-     * Revoca el token solo si nadie lo revocó antes, en una sola operación atómica.
-     * @return false si ya estaba revocado (dos renovaciones simultáneas o un token robado)
-     */
+    /* Revoca el token solo si nadie lo revoco antes en una sola operacion
+       regresa false si ya estaba revocado */
     boolean revocarSiVigente(long id, Instant ahora);
 
     void revocarTodos(long usuarioId, Instant ahora);

@@ -12,19 +12,16 @@ import roomiehub.vivienda.domain.exception.ConflictoDeEstadoException;
 import roomiehub.vivienda.domain.exception.DeudaCerradaException;
 import roomiehub.vivienda.domain.exception.OperacionNoPermitidaException;
 
-/**
- * RN-26: la deuda se aprueba cuando todos los demás participantes activos del gasto confirman,
- * en cualquier orden, después de que el deudor avise que pagó. Si no queda ningún otro participante,
- * se aprueba al avisar.
- * Aprobada y Repartida (RN-08) son finales.
- */
+/* La deuda se aprueba cuando los demas participantes activos confirman
+   despues de que el deudor avise que pago y si no hay nadie mas se aprueba al avisar
+   Aprobada y Repartida son finales */
 public final class Deuda {
 
-    /** Sección 10: al deudor a los 3 días si no ha avisado, luego cada 7, máximo 3 por periodo. */
+    // Al deudor a los 3 dias si no ha avisado y luego cada 7 maximo 3 por periodo
     static final Duration PRIMER_RECORDATORIO = Duration.ofDays(3);
     static final Duration ENTRE_RECORDATORIOS = Duration.ofDays(7);
     static final int MAXIMO_RECORDATORIOS = 3;
-    /** Sección 10: a quien falte por confirmar, a las 24 horas del aviso. */
+    // A quien falte confirmar a las 24 horas del aviso
     static final Duration RECORDATORIO_CONFIRMACION = Duration.ofHours(24);
 
     private final Long id;
@@ -68,7 +65,7 @@ public final class Deuda {
                 EstadoDeuda.PENDIENTE, null, Set.of(), null, 0, null, null);
     }
 
-    /** El deudor avisa que pagó. Un segundo aviso conserva la hora del primero. */
+    // El deudor avisa que pago y un segundo aviso guarda la hora del primero
     public boolean avisarPago(Instant ahora, Set<Long> participantesActivos) {
         exigirPendiente();
         if (avisoPagoEn == null) {
@@ -77,7 +74,7 @@ public final class Deuda {
         return reevaluar(participantesActivos);
     }
 
-    /** @return true si con esta confirmación la deuda quedó aprobada. */
+    // Regresa true si con esta confirmacion la deuda quedo aprobada
     public boolean confirmar(long confirmadorId, Set<Long> participantesActivos) {
         exigirPendiente();
         if (confirmadorId == deudorId) {
@@ -93,10 +90,8 @@ public final class Deuda {
         return reevaluar(participantesActivos);
     }
 
-    /**
-     * Recalcula con los participantes activos actuales; se llama también cuando alguien sale del
-     * gasto, por si la deuda ya reúne las confirmaciones que ahora se requieren.
-     */
+    /* Recalcula con los participantes activos actuales
+       tambien se llama cuando alguien sale del gasto por si ya tiene las confirmaciones */
     public boolean reevaluar(Set<Long> participantesActivos) {
         if (estado != EstadoDeuda.PENDIENTE) {
             return false;
@@ -110,13 +105,13 @@ public final class Deuda {
         return aprobada;
     }
 
-    /** RN-08: el deudor salió; su monto se reparte en deudas nuevas que apuntan a esta. */
+    // El deudor salio y su monto se reparte en deudas nuevas que apuntan a esta
     public void marcarRepartida() {
         exigirPendiente();
         estado = EstadoDeuda.REPARTIDA;
     }
 
-    /** Sección 10. @return true si toca recordarle al deudor ahora; deja registrado el envío. */
+    // Regresa true si toca recordarle al deudor y guarda el envio
     public boolean tocaRecordarAlDeudor(Instant ahora) {
         if (estado != EstadoDeuda.PENDIENTE || avisoPagoEn != null || creadoEn == null
                 || recordatoriosEnviados >= MAXIMO_RECORDATORIOS) {
@@ -133,7 +128,7 @@ public final class Deuda {
         return true;
     }
 
-    /** Sección 10, una sola vez por deuda. @return a quiénes recordarles confirmar (vacío si no toca). */
+    // Una sola vez por deuda y regresa a quien recordarle confirmar
     public Set<Long> recordarConfirmaciones(Instant ahora, Set<Long> participantesActivos) {
         if (estado != EstadoDeuda.PENDIENTE || avisoPagoEn == null || recordatorioConfirmacionEn != null
                 || ahora.isBefore(avisoPagoEn.plus(RECORDATORIO_CONFIRMACION))) {

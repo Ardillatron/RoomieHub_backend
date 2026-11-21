@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import roomiehub.vivienda.domain.repository.NotaRepository;
 
-/** CU-30 (Sistema): RN-31. Al leer, una nota con el plazo vencido ya no cuenta como fijada; esto limpia el dato. */
+// CU-30 limpia las notas fijadas cuyo plazo ya vencio
 public class DesfijarNotasVencidas {
 
     private final NotaRepository notas;

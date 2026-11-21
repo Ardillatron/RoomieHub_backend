@@ -14,7 +14,7 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** CU-04: las salas del usuario y el detalle de una, con el código y sus miembros. */
+// CU-04 las salas del usuario y el detalle de una con codigo y miembros
 public class ConsultarSalas {
 
     private final SalaRepository salas;
@@ -36,7 +36,7 @@ public class ConsultarSalas {
 
     @Transactional(readOnly = true)
     public SalaDeUsuario detalle(long usuarioId, long salaId) {
-        // RLS solo devuelve las membresías de salas donde el usuario es miembro activo.
+        // RLS solo regresa membresias de salas donde el usuario es miembro activo
         List<Membresia> activas = membresias.activasDeSala(salaId);
         Membresia mia = activas.stream()
                 .filter(m -> m.usuarioId() == usuarioId)

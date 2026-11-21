@@ -41,23 +41,21 @@ import roomiehub.vivienda.application.port.NotificadorPort;
 import roomiehub.vivienda.domain.repository.DispositivoRepository;
 import roomiehub.vivienda.infrastructure.config.TrasElCommit;
 
-/**
- * Sección 10: push con la API HTTP v1 de FCM. Sin el SDK de Firebase: el JWT de la cuenta de servicio lo firma
- * Nimbus, que ya viene con Spring Security. Envía después del commit y en otro hilo, para que la respuesta al
- * teléfono no espere a FCM. Sin credenciales (app.firebase.credenciales vacío), solo registra en el log.
- */
+/* Push con la API HTTP v1 de FCM sin el SDK de Firebase
+   el JWT de la cuenta de servicio lo firma Nimbus que ya viene con Spring Security
+   envia despues del commit en otro hilo y sin credenciales solo escribe en el log */
 @Component
 public class FirebaseNotificador implements NotificadorPort {
 
     private static final Logger log = LoggerFactory.getLogger(FirebaseNotificador.class);
     private static final String ALCANCE = "https://www.googleapis.com/auth/firebase.messaging";
-    // FCM rechaza mensajes de más de 4 KB; un mensaje de chat puede llegar a 4000 caracteres.
+    // FCM rechaza mensajes de mas de 4 KB y un mensaje de chat puede tener 4000 caracteres
     private static final int MAXIMO_CUERPO = 200;
 
     private final DispositivoRepository dispositivos;
     private final Clock reloj;
     private final RestClient http = RestClient.create();
-    // Un solo hilo: los envíos salen en orden y el token de acceso no necesita candados.
+    // Un solo hilo para enviar en orden y que el token no necesite candados
     private final ExecutorService envios = Executors.newSingleThreadExecutor();
     private final String proyecto;
     private final String cuentaDeServicio;
@@ -66,7 +64,7 @@ public class FirebaseNotificador implements NotificadorPort {
     private String acceso;
     private Instant accesoVence = Instant.MIN;
 
-    /** @param credenciales ruta al JSON de la cuenta de servicio (Firebase → Cuentas de servicio) */
+    // credenciales es la ruta al JSON de la cuenta de servicio de Firebase
     public FirebaseNotificador(@Value("${app.firebase.credenciales:}") String credenciales,
                                DispositivoRepository dispositivos, Clock reloj)
             throws IOException, ParseException, GeneralSecurityException {
@@ -109,13 +107,13 @@ public class FirebaseNotificador implements NotificadorPort {
                 enviarA(dispositivo, titulo, cuerpo, token);
             }
         } catch (RuntimeException | JOSEException e) {
-            // Una notificación perdida no deshace la acción que la generó.
+            // Una notificacion perdida no deshace la accion que la genero
             log.error("No se pudo enviar la notificación push", e);
         }
     }
 
     void enviarA(String dispositivo, String titulo, String cuerpo, String token) {
-        // Prioridad alta: en la prueba con un teléfono real, los de prioridad normal nunca llegaron.
+        // Prioridad alta porque con prioridad normal nunca llegaron al telefono
         Map<String, Object> mensaje = Map.of("message", Map.of("token", dispositivo,
                 "notification", Map.of("title", titulo, "body", cuerpo),
                 "android", Map.of("priority", "HIGH")));
@@ -125,7 +123,7 @@ public class FirebaseNotificador implements NotificadorPort {
                 .body(mensaje)
                 .exchange((peticion, respuesta) -> {
                     if (respuesta.getStatusCode().value() == 404) {
-                        dispositivos.borrarToken(dispositivo); // UNREGISTERED: la app ya no está en ese teléfono
+                        dispositivos.borrarToken(dispositivo); // UNREGISTERED significa que la app ya no esta en ese telefono
                     } else if (respuesta.getStatusCode().isError()) {
                         log.warn("FCM respondió {} al enviar a un dispositivo", respuesta.getStatusCode());
                     }
@@ -133,7 +131,7 @@ public class FirebaseNotificador implements NotificadorPort {
                 });
     }
 
-    /** Token OAuth de una hora: se cambia el JWT firmado de la cuenta de servicio por él y se reusa. */
+    // Token OAuth de una hora que se pide con el JWT de la cuenta de servicio y se reusa
     String accesoFcm() throws JOSEException {
         Instant ahora = reloj.instant();
         if (ahora.isBefore(accesoVence)) {
@@ -156,7 +154,7 @@ public class FirebaseNotificador implements NotificadorPort {
                 .retrieve()
                 .body(Map.class);
         acceso = (String) respuesta.get("access_token");
-        // Un minuto de margen para no usarlo justo cuando vence.
+        // Un minuto de margen para no usarlo justo cuando vence
         accesoVence = ahora.plusSeconds(((Number) respuesta.get("expires_in")).longValue() - 60);
         return acceso;
     }

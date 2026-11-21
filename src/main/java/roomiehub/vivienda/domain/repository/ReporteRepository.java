@@ -11,6 +11,6 @@ public interface ReporteRepository {
 
     Optional<Reporte> buscarPorId(long id);
 
-    /** Los no resueltos, del más viejo al más nuevo. */
+    // Los no resueltos del mas viejo al mas nuevo
     List<Reporte> pendientesDeSala(long salaId);
 }

@@ -1,6 +1,6 @@
 package roomiehub.vivienda.domain.model.finanzas;
 
-/** RN-21: cada gasto tiene una sola moneda, sin conversión. */
+// Cada gasto tiene una sola moneda sin conversion
 public enum Moneda {
     MXN,
     USD

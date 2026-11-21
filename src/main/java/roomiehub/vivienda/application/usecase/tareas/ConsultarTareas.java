@@ -21,12 +21,12 @@ import roomiehub.vivienda.domain.repository.TareaRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 import roomiehub.vivienda.domain.service.CalculadoraDePuntos;
 
-/** Lo que cualquier miembro puede ver de las tareas: catálogo, asignaciones vigentes y balance (CU-18). */
+// Lo que cualquier miembro ve de las tareas catalogo asignaciones y balance
 public class ConsultarTareas {
 
     public record AsignacionConNombres(AsignacionTarea asignacion, String tarea, String responsable) {}
 
-    /** RN-17: el visible se reinicia cada trimestre; el histórico es el que usa el algoritmo. */
+    // El visible se reinicia cada trimestre y el historico es el que usa el algoritmo
     public record Balance(long usuarioId, String nombre, int visible, int historico) {}
 
     private final AccesoASala acceso;
@@ -55,7 +55,7 @@ public class ConsultarTareas {
         return tareas.activasDeSala(salaId);
     }
 
-    /** Las de periodos vigentes y las recién cerradas que aún están dentro del margen de RN-16. */
+    // Las de periodos vigentes y las recien cerradas que siguen en el margen
     @Transactional(readOnly = true)
     public List<AsignacionConNombres> asignaciones(long usuarioId, long salaId) {
         acceso.exigirMiembro(salaId, usuarioId);

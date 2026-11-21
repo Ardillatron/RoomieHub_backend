@@ -5,7 +5,7 @@ import java.util.List;
 
 import roomiehub.vivienda.domain.model.sala.Membresia;
 
-/** RN-06: el rol pasa al miembro activo con mayor antigüedad (unido_en más viejo). */
+// El rol pasa al miembro activo con mas antiguedad
 public final class SucesionDeAdministrador {
 
     private SucesionDeAdministrador() {}

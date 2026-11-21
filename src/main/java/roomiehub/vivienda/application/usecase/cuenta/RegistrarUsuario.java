@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.model.cuenta.Usuario;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** CU-01: registro con correo y contraseña. */
+// CU-01 registro con correo y contraseña
 public class RegistrarUsuario {
 
     private static final int MINIMO_CARACTERES = 8;

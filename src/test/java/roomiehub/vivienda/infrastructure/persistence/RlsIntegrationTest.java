@@ -15,10 +15,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * Verifica las políticas de la sección 9 contra PostgreSQL real, conectado como app_user.
- * Necesita la base de db/roles.sql y local.properties: {@code ./mvnw test -Ddb=true}
- */
+/* Revisa las politicas de RLS contra PostgreSQL real conectado como app_user
+   necesita la base de db/roles sql y local properties y se corre con mvnw test y db en true */
 @SpringBootTest
 @EnabledIfSystemProperty(named = "db", matches = "true")
 class RlsIntegrationTest {
@@ -83,7 +81,7 @@ class RlsIntegrationTest {
 
     @Test
     void sinUsuarioFijadoNoHayFilasNiErrores() {
-        contar(ana, "SELECT 1"); // deja una conexión del pool que ya tuvo app.usuario_id
+        contar(ana, "SELECT 1"); // deja una conexion del pool que ya tuvo app usuario_id
         for (int i = 0; i < 3; i++) {
             Long vistas = tx.execute(s -> jdbc.queryForObject(
                     "SELECT count(*) FROM notas_tablon WHERE sala_id = " + sala, Long.class));
@@ -114,7 +112,7 @@ class RlsIntegrationTest {
 
     @Test
     void appUserNoHeredaLosPermisosDelScheduler() {
-        // Sin SET ROLE, app_user no puede saltarse su propia política usando la del scheduler.
+        // Sin SET ROLE app_user no puede saltarse su politica usando la del scheduler
         long vistas = tx.execute(s -> {
             jdbc.queryForObject("SELECT set_config('app.sala_id', ?, true)", String.class, String.valueOf(sala));
             return jdbc.queryForObject("SELECT count(*) FROM notas_tablon WHERE sala_id = ?", Long.class, sala);

@@ -11,7 +11,7 @@ import roomiehub.vivienda.domain.repository.MembresiaRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/** CU-07: RN-03 y RN-06. */
+// CU-07 pasa el rol de admin a otro miembro
 public class TransferirAdministrador {
 
     private final SalaRepository salas;
@@ -36,7 +36,7 @@ public class TransferirAdministrador {
                 .findFirst()
                 .orElseThrow(() -> new RecursoNoEncontradoException("Esa persona no es miembro de la sala"));
 
-        // Primero se degrada: el índice único solo admite un Administrador activo por sala.
+        // Primero se le quita el rol porque solo puede haber un admin activo por sala
         actual.degradar();
         membresias.guardar(actual);
         nuevo.promover();

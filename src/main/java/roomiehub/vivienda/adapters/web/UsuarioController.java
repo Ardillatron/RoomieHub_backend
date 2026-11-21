@@ -58,14 +58,14 @@ public class UsuarioController {
         return UsuarioResponse.de(editarPerfil.ejecutar(Long.parseLong(jwt.getSubject()), body.nombre()));
     }
 
-    /** CU-31: lo exigen ambas tiendas (sección 12). */
+    // CU-31 borrar cuenta lo piden las dos tiendas
     @DeleteMapping("/yo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@AuthenticationPrincipal Jwt jwt) {
         eliminarCuenta.ejecutar(Long.parseLong(jwt.getSubject()));
     }
 
-    /** Sección 10: idempotente, la app lo llama al iniciar sesión y cuando FCM renueva el token. */
+    // Idempotente y la app lo llama al iniciar sesion y cuando FCM renueva el token
     @PutMapping("/yo/dispositivos")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void registrarDispositivo(@AuthenticationPrincipal Jwt jwt, @RequestBody DispositivoRequest body) {

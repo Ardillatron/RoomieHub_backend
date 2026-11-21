@@ -9,7 +9,7 @@ import roomiehub.vivienda.domain.exception.CredencialesInvalidasException;
 import roomiehub.vivienda.domain.model.cuenta.Usuario;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** CU-01: inicio de sesión con correo y contraseña. */
+// CU-01 login con correo y contraseña
 public class IniciarSesion {
 
     private final UsuarioRepository usuarios;
@@ -28,7 +28,7 @@ public class IniciarSesion {
     public Sesion ejecutar(String email, String contrasena, String dispositivo) {
         Optional<Usuario> usuario = usuarios.buscarPorEmail(Usuario.normalizarCorreo(email))
                 .filter(Usuario::tieneContrasena);
-        // Se compara aunque la cuenta no exista, para que el tiempo de respuesta no revele qué correos existen.
+        // Compara aunque la cuenta no exista para no revelar que correos existen
         boolean coincide = hasher.coincide(contrasena, usuario.map(Usuario::passwordHash).orElse(hashSenuelo));
         if (usuario.isEmpty() || !coincide) {
             throw new CredencialesInvalidasException();

@@ -10,7 +10,7 @@ import roomiehub.vivienda.domain.model.sala.Sala;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 import roomiehub.vivienda.domain.repository.SalaRepository;
 
-/** CU-25 (Sistema): RN-23 y RN-41. Pausado en una sala desactivada (RN-09). */
+// CU-25 genera las deudas del periodo y se pausa en una sala desactivada
 public class GenerarDeudasDelPeriodo {
 
     private final SalaRepository salas;

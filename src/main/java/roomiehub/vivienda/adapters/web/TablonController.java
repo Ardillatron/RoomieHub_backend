@@ -33,14 +33,12 @@ import roomiehub.vivienda.application.usecase.convivencia.ReportarNota;
 import roomiehub.vivienda.domain.model.convivencia.Nota;
 import roomiehub.vivienda.domain.model.convivencia.TipoReaccion;
 
-/** CU-09, CU-10, CU-12, CU-13 y la moderación de reportes. */
+// CU-09 CU-10 CU-12 CU-13 y moderacion de reportes del tablon
 @RestController
 public class TablonController {
 
-    /**
-     * Texto, imagen o ambos. {@code imagenId}: el que devolvió POST /salas/{id}/imagenes/firma, ya subida.
-     * {@code clientUuid}: lo genera la app (RN-35); reintentar con el mismo no duplica la nota.
-     */
+    /* Texto imagen o ambos e imagenId es el que regreso la firma ya subida
+       clientUuid lo genera la app y reintentar con el mismo no duplica la nota */
     public record CrearNotaRequest(@Size(max = 2000) String texto, @Size(max = 200) String imagenId,
                                    UUID clientUuid) {}
 
@@ -50,8 +48,8 @@ public class TablonController {
 
     public record FijarRequest(@NotNull Instant hasta) {}
 
-    /** Con foto: {@code imagenMiniaturaUrl} en el tablón, {@code imagenUrl} al ampliar y {@code texto} al reverso. */
-    /** {@code clientUuid}: con él la app empareja la nota que creó sin conexión con la del servidor. */
+    // Con foto se usa la miniatura en el tablon la completa al ampliar y el texto atras
+    // Con clientUuid la app empareja la nota que creo sin conexion con la del servidor
     public record NotaResponse(long id, long autorId, String autor, String texto, String imagenUrl,
                                String imagenMiniaturaUrl, Instant creadoEn, Instant fijadaHasta, long likes,
                                long dislikes, TipoReaccion miReaccion, UUID clientUuid) {
@@ -88,7 +86,7 @@ public class TablonController {
         this.moderarReportes = moderarReportes;
     }
 
-    /** Las fijadas arriba (solo en la primera página) y las demás de la más nueva a la más vieja. */
+    // Las fijadas arriba solo en la primera pagina y las demas de la mas nueva a la mas vieja
     @GetMapping("/salas/{salaId}/notas")
     public TablonResponse tablon(@AuthenticationPrincipal Jwt jwt, @PathVariable long salaId,
                                  @RequestParam(required = false) Long antesDe,

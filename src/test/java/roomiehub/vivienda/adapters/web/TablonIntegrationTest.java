@@ -29,7 +29,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
 
-/** CU-09, CU-10, CU-12, CU-13 y CU-30 por HTTP contra PostgreSQL real: {@code ./mvnw test -Ddb=true} */
+// CU-09 CU-10 CU-12 CU-13 y CU-30 por HTTP contra PostgreSQL real con mvnw test y db en true
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -53,7 +53,7 @@ class TablonIntegrationTest {
             como(c, post("/salas/unirse"), "{\"codigo\":\"%s\"}".formatted(codigo)).andExpect(status().isOk());
         }
 
-        // ─── CU-09: con el mismo UUID de la app, reintentar no duplica (RN-35) ───
+        // CU-09 con el mismo UUID de la app reintentar no duplica
         String uuid = UUID.randomUUID().toString();
         long primera = id(nota(beto, sala, "Hay pastel", uuid).andExpect(status().isCreated()));
         assertEquals(primera, id(nota(beto, sala, "Hay pastel", uuid).andExpect(status().isCreated())));
@@ -63,7 +63,7 @@ class TablonIntegrationTest {
         nota(intruso, sala, "spam", null).andExpect(status().isNotFound());
         como(intruso, get("/salas/{id}/notas", sala), null).andExpect(status().isNotFound());
 
-        // ─── CU-10: like o dislike, se cambia y se quita ───
+        // CU-10 like o dislike se cambia y se quita
         reaccion(beto, tercera, "LIKE");
         reaccion(carla, tercera, "DISLIKE");
         reaccion(beto, tercera, "DISLIKE");
@@ -75,7 +75,7 @@ class TablonIntegrationTest {
         como(beto, get("/salas/{id}/notas", sala), null)
                 .andExpect(jsonPath("$.recientes[?(@.id == %d)].dislikes".formatted(tercera)).value(1));
 
-        // ─── CU-12: solo la Administradora, hasta 30 días, máximo 3 a la vez ───
+        // CU-12 solo la admin hasta 30 dias y maximo 3 a la vez
         String enUnaSemana = Instant.now().plus(Duration.ofDays(7)).toString();
         fijar(beto, primera, enUnaSemana).andExpect(status().isForbidden());
         fijar(ana, primera, Instant.now().plus(Duration.ofDays(31)).toString()).andExpect(status().isBadRequest());
@@ -89,7 +89,7 @@ class TablonIntegrationTest {
                 .andExpect(jsonPath("$.recientes.length()").value(1))
                 .andExpect(jsonPath("$.recientes[0].id").value(cuarta));
 
-        // Paginación de las no fijadas
+        // Paginas de las no fijadas
         como(ana, delete("/notas/{id}/fijada", segunda), null).andExpect(status().isNoContent());
         como(ana, get("/salas/{id}/notas?limite=1", sala), null)
                 .andExpect(jsonPath("$.recientes[0].id").value(cuarta));
@@ -97,7 +97,7 @@ class TablonIntegrationTest {
                 .andExpect(jsonPath("$.fijadas.length()").value(0))
                 .andExpect(jsonPath("$.recientes[0].id").value(segunda));
 
-        // ─── RN-29: reportes al Administrador ───
+        // Reportes al admin
         como(carla, post("/notas/{id}/reportes", tercera), "{\"motivo\":\"Es ofensiva\"}")
                 .andExpect(status().isCreated());
         como(beto, get("/salas/{id}/reportes", sala), null).andExpect(status().isForbidden());
@@ -111,13 +111,13 @@ class TablonIntegrationTest {
         como(ana, post("/reportes/{id}/resolver", reporte), null).andExpect(status().isConflict());
         como(ana, get("/salas/{id}/reportes", sala), null).andExpect(jsonPath("$.length()").value(0));
 
-        // ─── CU-13: solo la Administradora; una nota eliminada ya no admite nada ───
+        // CU-13 solo la admin y una nota borrada ya no acepta nada
         como(beto, delete("/notas/{id}", tercera), null).andExpect(status().isForbidden());
         como(ana, delete("/notas/{id}", tercera), null).andExpect(status().isNoContent());
         reaccionSinEsperar(beto, tercera, "LIKE").andExpect(status().isNotFound());
         como(beto, get("/salas/{id}/notas", sala), null).andExpect(jsonPath("$.fijadas.length()").value(1));
 
-        // ─── Nota con imagen: firma de subida por sala y URL firmada al leer ───
+        // Nota con imagen con firma de subida por sala y URL firmada al leer
         String firma = como(beto, post("/salas/{id}/imagenes/firma", sala), null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.parametros.type").value("authenticated"))
@@ -136,7 +136,7 @@ class TablonIntegrationTest {
                 .andExpect(status().isBadRequest());
         como(beto, post("/salas/{id}/notas", sala), "{\"texto\":\"\"}").andExpect(status().isBadRequest());
 
-        // ─── CU-30: el proceso programado desfija lo que venció ───
+        // CU-30 el proceso programado desfija lo que vencio
         sql(ana, () -> jdbc.update("UPDATE notas_tablon SET fijada_hasta = now() - interval '1 minute' WHERE id = ?",
                 primera));
         mvc.perform(post("/internal/jobs/ejecutar").header("X-Jobs-Secret", "secreto-de-prueba"))
@@ -145,7 +145,7 @@ class TablonIntegrationTest {
                 "SELECT fijada_hasta FROM notas_tablon WHERE id = ?", Instant.class, primera)));
     }
 
-    // ─── Ayudantes ───
+    // Ayudantes
 
     ResultActions nota(Cuenta c, long sala, String texto, String uuid) throws Exception {
         String cuerpo = uuid == null ? "{\"texto\":\"%s\"}".formatted(texto)

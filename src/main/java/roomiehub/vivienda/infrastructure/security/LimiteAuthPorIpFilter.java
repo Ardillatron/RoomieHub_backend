@@ -17,10 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import roomiehub.vivienda.adapters.web.LimitadorDeIntentos;
 
-/**
- * Frena el abuso de /auth/** desde una misma IP (adivinar contraseñas, registros masivos).
- * Detrás del proxy de Render, la IP real llega por X-Forwarded-For (server.forward-headers-strategy).
- */
+/* Frena el abuso de /auth desde una misma IP como adivinar contraseñas o registros masivos
+   detras del proxy de Render la IP real llega por X Forwarded For */
 @Component
 public class LimiteAuthPorIpFilter extends OncePerRequestFilter {
 

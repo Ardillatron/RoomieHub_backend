@@ -1,6 +1,6 @@
 package roomiehub.vivienda.domain.exception;
 
-/** RN-02. */
+// RN-02
 public class LimiteMembresiasException extends DomainException {
 
     public LimiteMembresiasException() {

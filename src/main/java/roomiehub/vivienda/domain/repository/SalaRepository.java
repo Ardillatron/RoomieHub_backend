@@ -9,34 +9,30 @@ import roomiehub.vivienda.domain.model.sala.Sala;
 
 public interface SalaRepository {
 
-    /** Lo mínimo para unirse sin ser miembro todavía (CU-03); no expone el contenido de la sala. */
+    // Lo minimo para unirse sin ser miembro todavia sin mostrar el contenido de la sala
     record SalaPorCodigo(long salaId, EstadoSala estado, int miembrosActivos) {}
 
     Optional<Sala> buscarPorId(long id);
 
     Optional<SalaPorCodigo> buscarPorCodigo(CodigoInvitacion codigo);
 
-    /** Inserta o actualiza; devuelve la sala con su id. */
+    // Inserta o actualiza y regresa la sala con su id
     Sala guardar(Sala sala);
 
-    /** RN-10: borrado definitivo; las tablas hijas se borran en cascada. */
+    // Borra la sala para siempre y las tablas hijas se borran en cascada
     void borrar(long id);
 
-    /**
-     * Serializa, hasta el fin de la transacción, las entradas y salidas de una sala, para que dos
-     * personas no tomen el último lugar (RN-01) ni dejen la sala vacía sin borrarla (RN-10).
-     */
+    /* Pone en fila las entradas y salidas de una sala hasta el fin de la transaccion
+       para que dos personas no tomen el ultimo lugar ni dejen la sala vacia */
     void bloquearMembresias(long salaId);
 
-    /**
-     * Serializa las altas de un mismo usuario (RN-02). Si se toman los dos candados, este va primero,
-     * para que dos transacciones nunca se esperen en orden inverso.
-     */
+    /* Pone en fila las altas de un mismo usuario
+       si se toman los dos candados este va primero para que no se esperen al reves */
     void bloquearMembresiasDeUsuario(long usuarioId);
 
-    /** Salas que el proceso programado debe revisar; funciona sin contexto de usuario ni de sala. */
+    // Salas que el proceso programado debe revisar sin contexto de usuario ni de sala
     List<Long> conTrabajoPendiente();
 
-    /** @return false si otra transacción ya procesa esta sala (el cron y el disparador externo coinciden). */
+    // Regresa false si otra transaccion ya procesa esta sala
     boolean intentarBloquearProcesamiento(long salaId);
 }

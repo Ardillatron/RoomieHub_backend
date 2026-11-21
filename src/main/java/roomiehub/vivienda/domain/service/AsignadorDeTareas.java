@@ -10,10 +10,8 @@ import java.util.random.RandomGenerator;
 
 import roomiehub.vivienda.domain.model.tareas.ValorTarea;
 
-/**
- * Sección 6: cada tarea, de mayor a menor valor, va al miembro con el menor puntaje proyectado
- * (histórico + lo ya asignado en este roleo). Los empates se sortean.
- */
+/* Cada tarea de mayor a menor valor va al miembro con menor puntaje proyectado
+   los empates se sortean */
 public final class AsignadorDeTareas {
 
     public record TareaARolear(long tareaId, ValorTarea valor) {}
@@ -28,10 +26,8 @@ public final class AsignadorDeTareas {
         this.azar = Objects.requireNonNull(azar, "azar");
     }
 
-    /**
-     * @param puntajeHistorico usuarioId → puntaje histórico de cada miembro activo
-     * @return tareaId → usuarioId, en el orden en que se asignaron; vacío si no hay miembros
-     */
+    /* puntajeHistorico es el puntaje de cada miembro activo
+       regresa tarea y usuario en el orden asignado o vacio si no hay miembros */
     public Map<Long, Long> asignar(List<TareaARolear> tareas, Map<Long, Integer> puntajeHistorico) {
         Map<Long, Long> asignaciones = new LinkedHashMap<>();
         if (puntajeHistorico.isEmpty()) {
@@ -42,7 +38,7 @@ public final class AsignadorDeTareas {
 
         for (TareaARolear tarea : tareas.stream().sorted(MAYOR_VALOR_PRIMERO).toList()) {
             long menor = proyectado.values().stream().mapToLong(Long::longValue).min().orElseThrow();
-            // Ordenados para que el sorteo sea reproducible con una semilla fija.
+            // Ordenados para que el sorteo se repita igual con una semilla fija
             List<Long> empatados = proyectado.entrySet().stream()
                     .filter(e -> e.getValue() == menor)
                     .map(Map.Entry::getKey)

@@ -18,7 +18,7 @@ import roomiehub.vivienda.domain.repository.DeudaRepository;
 import roomiehub.vivienda.domain.repository.GastoRepository;
 import roomiehub.vivienda.domain.repository.MembresiaRepository;
 
-/** CU-20 (editar): RN-24, solo afecta a los periodos futuros. La moneda no se cambia. */
+// CU-20 editar solo cambia los periodos futuros y la moneda no cambia
 public class EditarGasto {
 
     private final AccesoASala acceso;
@@ -48,8 +48,8 @@ public class EditarGasto {
         GastoCompartido guardado = gastos.guardar(gasto);
         gastos.definirParticipantes(gasto.id(), salaId, validados);
 
-        // Quien deja de participar ya no cuenta como confirmador requerido de lo pendiente (RN-26).
-        // Sus propias deudas pendientes se conservan: corresponden a periodos en los que sí participó.
+        /* Quien deja de participar ya no tiene que confirmar lo pendiente
+           sus deudas pendientes se quedan porque son de periodos donde si participo */
         Set<Long> activos = Set.copyOf(validados);
         for (Deuda deuda : deudas.pendientesDeGasto(gasto.id())) {
             if (deuda.reevaluar(activos)) {

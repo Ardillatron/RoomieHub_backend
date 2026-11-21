@@ -18,13 +18,11 @@ import roomiehub.vivienda.domain.repository.ReporteRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/**
- * Sección 3: el Administrador recibe y resuelve los reportes. Resolver solo los cierra; si hay que
- * eliminar la nota o el mensaje, lo hace aparte (CU-13, CU-15).
- */
+/* El admin recibe y resuelve los reportes
+   resolver solo los cierra y borrar la nota o mensaje se hace aparte */
 public class ModerarReportes {
 
-    /** {@code contenido}: el texto de la nota o del mensaje reportado. */
+    // contenido es el texto de la nota o mensaje reportado
     public record ReporteVista(Reporte reporte, String reportadoPor, String contenido) {}
 
     private final AccesoASala acceso;

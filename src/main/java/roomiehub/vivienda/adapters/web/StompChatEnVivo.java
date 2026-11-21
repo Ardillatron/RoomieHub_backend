@@ -11,14 +11,12 @@ import roomiehub.vivienda.application.port.ChatEnVivoPort;
 import roomiehub.vivienda.application.usecase.convivencia.MensajeVista;
 import roomiehub.vivienda.infrastructure.config.TrasElCommit;
 
-/**
- * Publica en la cola privada de cada destinatario (/user/queue/chat). Lo hace después del commit, para
- * que nadie vea un mensaje que luego se deshizo ni lo busque en el historial antes de que exista.
- */
+/* Publica en la cola privada de cada destinatario despues del commit
+   para que nadie vea un mensaje que luego se deshizo */
 @Component
 public class StompChatEnVivo implements ChatEnVivoPort {
 
-    /** Lo que recibe la app: {@code mensaje} en MENSAJE, {@code mensajeId} en MENSAJE_ELIMINADO. */
+    // La app recibe mensaje en MENSAJE y mensajeId en MENSAJE_ELIMINADO
     public record EventoChat(String tipo, long salaId, MensajeResponse mensaje, Long mensajeId) {}
 
     private static final String COLA = "/queue/chat";
@@ -49,7 +47,7 @@ public class StompChatEnVivo implements ChatEnVivoPort {
     }
 
     private void enviar(Collection<Long> destinatarios, EventoChat evento) {
-        // El nombre del usuario conectado es el subject del JWT, su id.
+        // El nombre del usuario conectado es el subject del JWT que es su id
         destinatarios.forEach(id -> stomp.convertAndSendToUser(Long.toString(id), COLA, evento));
     }
 }

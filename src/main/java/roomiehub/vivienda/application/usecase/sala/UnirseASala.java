@@ -28,7 +28,7 @@ import roomiehub.vivienda.domain.repository.SalaRepository.SalaPorCodigo;
 import roomiehub.vivienda.domain.service.CalculadoraDePuntos;
 import roomiehub.vivienda.domain.service.ReglasDeMembresia;
 
-/** CU-03: RN-01, RN-02, RN-04, RN-07 y RN-18. */
+// CU-03 unirse a una sala con el codigo
 public class UnirseASala {
 
     private final SalaRepository salas;
@@ -56,10 +56,10 @@ public class UnirseASala {
         } catch (DatoInvalidoException e) {
             throw noExiste();
         }
-        salas.bloquearMembresiasDeUsuario(usuarioId); // primero el del usuario, después el de la sala
+        salas.bloquearMembresiasDeUsuario(usuarioId); // primero el del usuario y luego el de la sala
         long salaId = salas.buscarPorCodigo(codigo).orElseThrow(UnirseASala::noExiste).salaId();
         salas.bloquearMembresias(salaId);
-        // Se vuelve a leer ya con el candado: el conteo de miembros no puede cambiar hasta el commit.
+        // Se lee otra vez con el candado y el conteo no cambia hasta el commit
         SalaPorCodigo encontrada = salas.buscarPorCodigo(codigo).orElseThrow(UnirseASala::noExiste);
         if (encontrada.estado() == EstadoSala.DESACTIVADA) {
             throw new OperacionNoPermitidaException("La sala está desactivada: no admite nuevos miembros");
@@ -73,8 +73,8 @@ public class UnirseASala {
 
         Instant ahora = reloj.instant();
         Membresia membresia = previa.orElseGet(() -> Membresia.nueva(usuarioId, salaId, Rol.HABITANTE, ahora));
-        membresia.reactivar(ahora); // RN-04 y RN-07: Habitante, con antigüedad desde hoy
-        // Primero la membresía: RLS solo deja leer los puntos de la sala a sus miembros.
+        membresia.reactivar(ahora); // entra como Habitante con antiguedad desde hoy
+        // Primero la membresia porque RLS solo deja leer puntos a los miembros
         membresias.guardar(membresia);
 
         List<Membresia> otros = membresias.activasDeSala(salaId).stream()
@@ -88,10 +88,8 @@ public class UnirseASala {
         return new SalaDeUsuario(sala, Rol.HABITANTE, List.of());
     }
 
-    /**
-     * RN-18: promedio de los demás más la tarea más alta, redondeado hacia arriba. Quien vuelve conserva
-     * su historial y recibe un AJUSTE que lleva su puntaje a ese valor.
-     */
+    /* Promedio de los demas mas la tarea mas alta redondeado hacia arriba
+       quien vuelve conserva su historial y recibe un AJUSTE hasta ese valor */
     private void asignarPuntajeInicial(long usuarioId, long salaId, List<Membresia> otros, boolean vuelve) {
         Map<Long, Integer> historicos = puntos.historicos(salaId);
         int objetivo = CalculadoraDePuntos.puntajeInicial(

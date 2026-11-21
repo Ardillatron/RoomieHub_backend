@@ -24,19 +24,17 @@ import roomiehub.vivienda.application.port.AlmacenamientoImagenesPort;
 import roomiehub.vivienda.application.port.ServicioNoDisponibleException;
 import roomiehub.vivienda.infrastructure.config.TrasElCommit;
 
-/**
- * Es el único lugar que conoce Cloudinary (sección 2). Las firmas se calculan aquí con SHA-1, como pide
- * Cloudinary, sin su SDK: son pocas líneas y así no se agrega una dependencia.
- */
+/* Unico lugar que conoce Cloudinary
+   las firmas se calculan aqui con SHA 1 sin su SDK para no agregar una dependencia */
 @Component
 public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
 
     private static final Pattern URL = Pattern.compile("^cloudinary://([^:]+):([^@]+)@(.+)$");
-    /** RN-34: hasta 1080p. Se limita el lado mayor a 1920 px, sea horizontal o vertical. */
+    // Hasta 1080p y el lado mayor se limita a 1920 px
     static final String LIMITE_AL_SUBIR = "c_limit,h_1920,w_1920";
-    /** Formato y calidad automáticos al entregar: menos datos para el teléfono y menos créditos. */
+    // Formato y calidad automaticos para mandar menos datos al telefono
     static final String AL_ENTREGAR = "f_auto,q_auto";
-    /** Para el tablón: lado mayor de 600 px; la completa solo se descarga al ampliar. */
+    // Para el tablon el lado mayor es de 600 px y la completa solo se baja al ampliar
     static final String MINIATURA = "c_limit,h_600,w_600/" + AL_ENTREGAR;
     private static final String FORMATOS = "jpg,jpeg,png,webp,heic";
     private static final Logger log = LoggerFactory.getLogger(CloudinaryAlmacenamiento.class);
@@ -47,7 +45,7 @@ public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
     private final Clock reloj;
     private final RestClient http = RestClient.create();
 
-    /** @param cloudinaryUrl la "API environment variable" de Cloudinary; vacía = imágenes deshabilitadas */
+    // cloudinaryUrl es la variable de Cloudinary y vacia apaga las imagenes
     public CloudinaryAlmacenamiento(@Value("${app.cloudinary.url:}") String cloudinaryUrl, Clock reloj) {
         this.reloj = reloj;
         if (cloudinaryUrl.isBlank()) {
@@ -56,7 +54,7 @@ public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
         }
         Matcher m = URL.matcher(cloudinaryUrl.trim());
         if (!m.matches()) {
-            // Sin mostrar el valor: contiene el secreto.
+            // Sin mostrar el valor porque tiene el secreto
             throw new IllegalStateException("app.cloudinary.url no tiene la forma cloudinary://key:secret@cloud_name");
         }
         apiKey = m.group(1);
@@ -100,12 +98,12 @@ public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
     @Override
     public void borrarCarpeta(String carpeta) {
         if (cloudName == null) {
-            return; // sin Cloudinary no se subió ninguna imagen
+            return; // sin Cloudinary no se subio ninguna imagen
         }
-        // Si la transacción se deshace, la sala sigue existiendo y sus imágenes también.
+        // Si la transaccion se deshace la sala y sus imagenes siguen
         TrasElCommit.ejecutar(() -> {
             try {
-                // La Admin API borra hasta 1000 por llamada y responde partial=true si quedaron más.
+                // La API borra hasta 1000 por llamada y avisa si quedaron mas
                 Map<?, ?> respuesta;
                 do {
                     respuesta = http.delete()
@@ -116,13 +114,13 @@ public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
                             .body(Map.class);
                 } while (respuesta != null && Boolean.TRUE.equals(respuesta.get("partial")));
             } catch (RestClientException e) {
-                // shortcut: si falla, las imágenes quedan huérfanas; agregar reintentos si pasa seguido.
+                // shortcut si falla las imagenes quedan huerfanas y agregar reintentos si pasa seguido
                 log.error("No se pudieron borrar las imágenes de {}", carpeta, e);
             }
         });
     }
 
-    /** Firma de una petición a la API: parámetros ordenados, "k=v" unidos con "&", más el secreto, en SHA-1. */
+    // Firma de una peticion a la API con parametros ordenados mas el secreto en SHA 1
     static String firmaDeParametros(Map<String, String> parametros, String secreto) {
         String aFirmar = new TreeMap<>(parametros).entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue())
@@ -130,7 +128,7 @@ public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
         return HexFormat.of().formatHex(sha1(aFirmar + secreto));
     }
 
-    /** Firma de una URL de entrega: los primeros 8 caracteres del SHA-1 en Base64 para URL. */
+    // Firma de una URL con los primeros 8 caracteres del SHA 1 en Base64
     static String firmaDeUrl(String ruta, String secreto) {
         return Base64.getUrlEncoder().encodeToString(sha1(ruta + secreto)).substring(0, 8);
     }
@@ -139,7 +137,7 @@ public class CloudinaryAlmacenamiento implements AlmacenamientoImagenesPort {
         try {
             return MessageDigest.getInstance("SHA-1").digest(texto.getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e); // SHA-1 existe en toda JVM
+            throw new IllegalStateException(e); // toda JVM tiene SHA 1
         }
     }
 

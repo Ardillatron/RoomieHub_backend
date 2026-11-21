@@ -15,25 +15,25 @@ public interface SalaJpaRepository extends JpaRepository<SalaJpaEntity, Long> {
         Integer getMiembrosActivos();
     }
 
-    // SECURITY DEFINER: funciona aunque el usuario todavía no sea miembro (sección 9).
+    // SECURITY DEFINER funciona aunque el usuario aun no sea miembro
     @Query(value = """
             SELECT sala_id AS salaId, estado, miembros_activos AS miembrosActivos
             FROM buscar_sala_por_codigo(:codigo)""", nativeQuery = true)
     Optional<SalaPorCodigoVista> buscarPorCodigo(String codigo);
 
-    // Borrado directo, sin cargar la sala: las tablas hijas caen por ON DELETE CASCADE.
+    // Borra directo sin cargar la sala y las tablas hijas caen en cascada
     @Modifying
     @Query("DELETE FROM SalaJpaEntity s WHERE s.id = :id")
     int borrar(long id);
 
-    // Candados de transacción (sección 9): llave 1 = cupo de una sala, llave 2 = membresías de un usuario.
+    // Candados de transaccion con llave 1 para el cupo de una sala y llave 2 para las membresias de un usuario
     @Query(value = "SELECT CAST(pg_advisory_xact_lock(1, CAST(:salaId AS integer)) AS text)", nativeQuery = true)
     String bloquearMembresias(long salaId);
 
     @Query(value = "SELECT CAST(pg_advisory_xact_lock(2, CAST(:usuarioId AS integer)) AS text)", nativeQuery = true)
     String bloquearMembresiasDeUsuario(long usuarioId);
 
-    // Llave 3 = procesamiento programado de una sala; "try" para saltarla si otro proceso ya la tiene.
+    // Llave 3 para el proceso programado de una sala y try la salta si otro proceso ya la tiene
     @Query(value = "SELECT pg_try_advisory_xact_lock(3, CAST(:salaId AS integer))", nativeQuery = true)
     boolean intentarBloquearProcesamiento(long salaId);
 

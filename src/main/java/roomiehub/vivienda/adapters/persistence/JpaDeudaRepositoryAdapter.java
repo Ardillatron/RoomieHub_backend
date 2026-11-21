@@ -85,7 +85,7 @@ public class JpaDeudaRepositoryAdapter implements DeudaRepository {
         }
     }
 
-    /** Carga las confirmaciones de todas en una consulta, y la moneda de cada gasto una sola vez. */
+    // Carga las confirmaciones de todas en una consulta y la moneda de cada gasto una vez
     private List<Deuda> aDominio(List<DeudaJpaEntity> entidades) {
         if (entidades.isEmpty()) {
             return List.of();

@@ -44,7 +44,7 @@ class GastoYRecordatoriosTest {
     @Test
     void avanzarLaGeneracionSaltaLoAnterior() {
         GastoCompartido g = internet(LocalDate.of(2026, 9, 1));
-        g.avanzarGeneracionHasta(LocalDate.of(2026, 10, 20)); // reactivada el 20 de octubre (RN-41)
+        g.avanzarGeneracionHasta(LocalDate.of(2026, 10, 20)); // reactivada el 20 de octubre
         assertEquals(List.of(LocalDate.of(2026, 11, 1)), dias(g.periodosIniciados(MEDIADOS_DE_NOVIEMBRE, CDMX)),
                 "octubre empezó con la sala desactivada: no se cobra");
         g.avanzarGeneracionHasta(LocalDate.of(2026, 1, 1));
@@ -83,7 +83,7 @@ class GastoYRecordatoriosTest {
         assertThrows(RecursoNoEncontradoException.class, g::exigirVigente);
     }
 
-    // ─── Recordatorios (sección 10) ───
+    // Recordatorios
 
     static final Instant CREADA = Instant.parse("2026-11-01T06:00:00Z");
 

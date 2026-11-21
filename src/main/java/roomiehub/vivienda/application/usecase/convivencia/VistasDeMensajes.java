@@ -14,7 +14,7 @@ import roomiehub.vivienda.domain.model.cuenta.Usuario;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** Arma las vistas de varios mensajes a la vez: autores y notas citadas se cargan una sola vez. */
+// Arma varios mensajes a la vez cargando autores y notas citadas una sola vez
 public class VistasDeMensajes {
 
     private final UsuarioRepository usuarios;

@@ -8,14 +8,14 @@ import roomiehub.vivienda.domain.model.convivencia.MensajeChat;
 
 public interface MensajeRepository {
 
-    /** Inserta o actualiza; devuelve el mensaje con su id. */
+    // Inserta o actualiza y regresa el mensaje con su id
     MensajeChat guardar(MensajeChat mensaje);
 
     Optional<MensajeChat> buscarPorId(long id);
 
-    /** RN-35: el mensaje que ya creó esta misma acción offline, si existe. */
+    // El mensaje que ya creo esta misma accion offline si existe
     Optional<MensajeChat> buscarPorClientUuid(UUID clientUuid);
 
-    /** Los visibles, del más nuevo al más viejo; {@code antesDe} pagina por id (nulo = desde el último). */
+    // Los visibles del mas nuevo al mas viejo y antesDe pagina por id
     List<MensajeChat> visiblesDeSala(long salaId, Long antesDe, int limite);
 }

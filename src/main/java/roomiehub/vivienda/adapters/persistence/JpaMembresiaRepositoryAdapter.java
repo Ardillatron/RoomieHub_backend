@@ -43,7 +43,7 @@ public class JpaMembresiaRepositoryAdapter implements MembresiaRepository {
         e.setRol(m.rol());
         e.setActivo(m.activo());
         e.setUnidoEn(m.unidoEn());
-        // Inmediato: Hibernate reordena los UPDATE al hacer flush, y aquí el orden importa (RLS, un solo Administrador).
+        // Se escribe de inmediato porque Hibernate reordena los UPDATE y aqui el orden importa por RLS
         jpa.saveAndFlush(e);
     }
 

@@ -31,7 +31,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
 
-/** CU-20 a CU-22 y CU-25 por HTTP contra PostgreSQL real: {@code ./mvnw test -Ddb=true} */
+// CU-20 a CU-22 y CU-25 por HTTP contra PostgreSQL real con mvnw test y db en true
 @SpringBootTest
 @AutoConfigureMockMvc
 @EnabledIfSystemProperty(named = "db", matches = "true")
@@ -56,14 +56,14 @@ class FinanzasIntegrationTest {
             como(c, post("/salas/unirse"), "{\"codigo\":\"%s\"}".formatted(codigo)).andExpect(status().isOk());
         }
 
-        // ─── CU-20: solo la Administradora; participantes válidos ───
+        // CU-20 solo la admin y participantes validos
         crearGasto(beto, sala, "Internet", "100", "MENSUAL", hoy, List.of(ana, beto)).andExpect(status().isForbidden());
         crearGasto(ana, sala, "Internet", "100", "MENSUAL", hoy, List.of()).andExpect(status().isBadRequest());
         crearGasto(ana, sala, "Internet", "100", "MENSUAL", hoy, List.of(ana, new Cuenta(999_999, "")))
                 .andExpect(status().isBadRequest());
         crearGasto(ana, sala, "Internet", "100.999", "MENSUAL", hoy, List.of(ana)).andExpect(status().isBadRequest());
 
-        // Empezó hace un mes: se generan de inmediato ese periodo y el actual (RN-41), con el centavo rotando
+        // Empezo hace un mes y se generan ese periodo y el actual con el centavo rotando
         long internet = id(crearGasto(ana, sala, "Internet", "100", "MENSUAL", hoy.minusMonths(1),
                 List.of(ana, beto, carla)).andExpect(status().isCreated()));
         List<Map<String, Object>> pendientes = deudas(ana, sala, "PENDIENTE");
@@ -73,11 +73,11 @@ class FinanzasIntegrationTest {
         assertEquals(List.of("33.34", "33.33", "33.33"), porPeriodo.get(periodos.get(0)), "periodo 0");
         assertEquals(List.of("33.33", "33.34", "33.33"), porPeriodo.get(periodos.get(1)), "periodo 1: rota el centavo");
 
-        // CU-25: el proceso programado no duplica lo ya generado
+        // CU-25 el proceso programado no duplica lo ya generado
         jobs().andExpect(status().isNoContent());
         assertEquals(6, deudas(ana, sala, "PENDIENTE").size());
 
-        // ─── CU-21 y CU-22: avisar y confirmar (RN-26) ───
+        // CU-21 y CU-22 avisar y confirmar
         long deBeto = deudaDe(pendientes, beto, periodos.get(1));
         como(carla, post("/deudas/{id}/aviso", deBeto), null).andExpect(status().isForbidden());
         como(beto, post("/deudas/{id}/aviso", deBeto), null)
@@ -92,7 +92,7 @@ class FinanzasIntegrationTest {
                 "SELECT count(*) FROM confirmaciones_pago WHERE deuda_id = ?", Long.class, deBeto)));
         assertEquals(1, deudas(ana, sala, "APROBADA").size());
 
-        // ─── Gasto único entre dos: basta la confirmación del otro, pero solo después del aviso ───
+        // Gasto unico entre dos basta que el otro confirme pero solo despues del aviso
         long pizza = id(crearGasto(ana, sala, "Pizza", "300", "UNICA", hoy, List.of(ana, beto)));
         List<Map<String, Object>> dePizza = deudas(ana, sala, "PENDIENTE").stream()
                 .filter(d -> "Pizza".equals(d.get("concepto"))).toList();
@@ -103,11 +103,11 @@ class FinanzasIntegrationTest {
         como(beto, post("/deudas/{id}/confirmaciones", pizzaDeAna), null)
                 .andExpect(jsonPath("$.estado").value("APROBADA"));
 
-        // ─── RN-25: eliminar; sus deudas ya no admiten avisos ───
+        // Eliminar y sus deudas ya no aceptan avisos
         como(ana, delete("/salas/{s}/gastos/{g}", sala, pizza), null).andExpect(status().isNoContent());
         como(beto, post("/deudas/{id}/aviso", pizzaDeBeto), null).andExpect(status().isNotFound());
 
-        // ─── RN-24: editar solo afecta lo que sigue; quitar a Carla cambia quién debe confirmar ───
+        // Editar solo cambia lo que sigue y quitar a Carla cambia quien confirma
         long anaDelMesActual = deudaDe(pendientes, ana, periodos.get(1));
         como(ana, put("/salas/{s}/gastos/{g}", sala, internet),
                 "{\"concepto\":\"Internet fibra\",\"monto\":\"120\",\"frecuencia\":\"MENSUAL\",\"participantes\":[%d,%d]}"
@@ -121,7 +121,7 @@ class FinanzasIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].participantes.length()").value(2));
 
-        // ─── Sección 10: recordatorio al deudor a los 3 días sin aviso ───
+        // Recordatorio al deudor a los 3 dias sin aviso
         long carlaMesPasado = deudaDe(pendientes, carla, periodos.get(0));
         sql(ana, () -> jdbc.update("UPDATE deudas_usuarios SET creado_en = now() - interval '4 days' WHERE id = ?",
                 carlaMesPasado));
@@ -130,7 +130,7 @@ class FinanzasIntegrationTest {
                 "SELECT recordatorios_enviados FROM deudas_usuarios WHERE id = ?", Integer.class, carlaMesPasado)));
     }
 
-    // ─── Ayudantes ───
+    // Ayudantes
 
     ResultActions crearGasto(Cuenta c, long sala, String concepto, String monto, String frecuencia, LocalDate inicio,
                              List<Cuenta> participantes) throws Exception {
@@ -145,7 +145,7 @@ class FinanzasIntegrationTest {
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), "$");
     }
 
-    /** periodo → montos en el orden dado de deudores */
+    // periodo y montos en el orden de los deudores
     static Map<String, List<String>> montosPorPeriodo(List<Map<String, Object>> deudas, List<Cuenta> orden) {
         return deudas.stream().collect(Collectors.groupingBy(d -> (String) d.get("periodo"),
                 Collectors.collectingAndThen(Collectors.toList(), lista -> lista.stream()

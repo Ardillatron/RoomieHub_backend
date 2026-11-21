@@ -7,7 +7,7 @@ import roomiehub.vivienda.domain.model.tareas.Tarea;
 import roomiehub.vivienda.domain.repository.AsignacionRepository;
 import roomiehub.vivienda.domain.repository.TareaRepository;
 
-/** CU-16: borrado lógico. Sus asignaciones sin completar desaparecen, para no penalizar una tarea que ya no existe. */
+// CU-16 borrado logico y sus asignaciones sin completar desaparecen
 public class EliminarTarea {
 
     private final AccesoASala acceso;

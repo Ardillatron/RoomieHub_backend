@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.repository.DispositivoRepository;
 
-/** Sección 10: la app manda su token de FCM al iniciar sesión y cada vez que FCM lo renueva. */
+// La app manda su token de FCM al iniciar sesion y cada vez que FCM lo renueva
 public class RegistrarDispositivo {
 
     private static final Set<String> PLATAFORMAS = Set.of("ANDROID", "IOS");
-    // Los tokens de FCM rondan los 160 caracteres; el tope solo evita guardar basura enorme.
+    // Los tokens de FCM miden unos 160 caracteres y el limite evita guardar basura
     private static final int LARGO_MAXIMO = 4096;
 
     private final DispositivoRepository dispositivos;

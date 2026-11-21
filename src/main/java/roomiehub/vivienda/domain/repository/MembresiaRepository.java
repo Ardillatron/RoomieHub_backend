@@ -11,9 +11,9 @@ public interface MembresiaRepository {
 
     List<Membresia> activasDeUsuario(long usuarioId);
 
-    /** Activa o no: quien fue expulsado conserva su fila y la reactiva al volver (RN-07). */
+    // Activa o no porque quien fue expulsado conserva su fila y la reactiva al volver
     Optional<Membresia> buscar(long salaId, long usuarioId);
 
-    /** Se escribe de inmediato: el orden importa por RLS y por el índice de un solo Administrador. */
+    // Se escribe de inmediato porque el orden importa por RLS y por el indice de un solo admin
     void guardar(Membresia membresia);
 }

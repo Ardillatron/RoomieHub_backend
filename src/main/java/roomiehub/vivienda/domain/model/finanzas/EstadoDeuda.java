@@ -1,6 +1,6 @@
 package roomiehub.vivienda.domain.model.finanzas;
 
-/** RN-26: Aprobada y Repartida son estados finales. */
+// Aprobada y Repartida son finales
 public enum EstadoDeuda {
     PENDIENTE,
     APROBADA,

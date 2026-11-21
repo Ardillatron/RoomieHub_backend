@@ -6,10 +6,10 @@ import java.util.Objects;
 
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 
-/** Monto con centavos exactos. No acepta double, decimales de más ni negativos. */
+// Monto con centavos exactos sin double sin decimales de mas ni negativos
 public record Dinero(BigDecimal monto, Moneda moneda) {
 
-    private static final BigDecimal MAXIMO = new BigDecimal("9999999999.99"); // NUMERIC(12,2)
+    private static final BigDecimal MAXIMO = new BigDecimal("9999999999.99"); // NUMERIC 12 2
 
     public Dinero {
         Objects.requireNonNull(monto, "monto");

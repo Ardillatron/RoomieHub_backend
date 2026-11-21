@@ -16,10 +16,8 @@ import roomiehub.vivienda.domain.model.convivencia.Nota;
 import roomiehub.vivienda.domain.model.sala.Membresia;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 
-/**
- * CU-09: RN-28, con imagen opcional ya subida (FirmarSubidaDeImagen). Con el UUID de la app (RN-35),
- * repetir la misma acción devuelve la nota ya creada.
- */
+/* CU-09 crea una nota con imagen opcional ya subida
+   con el UUID de la app repetir la accion regresa la nota ya creada */
 public class CrearNota {
 
     private final AccesoASala acceso;

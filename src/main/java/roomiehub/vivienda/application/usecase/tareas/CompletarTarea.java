@@ -15,7 +15,7 @@ import roomiehub.vivienda.domain.repository.PuntosRepository;
 import roomiehub.vivienda.domain.repository.TareaRepository;
 import roomiehub.vivienda.domain.repository.UsuarioRepository;
 
-/** CU-17: RN-15 y RN-16. La hora que cuenta es la del servidor al recibir la marca. */
+// CU-17 marca una tarea y cuenta la hora del servidor
 public class CompletarTarea {
 
     private final AccesoASala acceso;
@@ -42,7 +42,7 @@ public class CompletarTarea {
 
     @Transactional
     public AsignacionTarea ejecutar(long usuarioId, long asignacionId) {
-        // RLS: una asignación de otra sala no se ve, así que también responde 404.
+        // Una asignacion de otra sala no se ve por RLS y tambien responde 404
         AsignacionTarea asignacion = asignaciones.buscarPorId(asignacionId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Asignación no encontrada"));
         acceso.exigirMiembroDeSalaActiva(asignacion.salaId(), usuarioId);
