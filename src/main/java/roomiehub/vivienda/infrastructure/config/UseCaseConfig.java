@@ -13,6 +13,7 @@ import roomiehub.vivienda.application.port.HasherDeContrasenasPort;
 import roomiehub.vivienda.application.port.NotificadorPort;
 import roomiehub.vivienda.application.port.VerificadorGooglePort;
 import roomiehub.vivienda.application.usecase.cuenta.CerrarSesion;
+import roomiehub.vivienda.application.usecase.cuenta.EditarPerfil;
 import roomiehub.vivienda.application.usecase.cuenta.EliminarCuenta;
 import roomiehub.vivienda.application.usecase.cuenta.EmisorDeSesiones;
 import roomiehub.vivienda.application.usecase.cuenta.IniciarSesion;
@@ -129,6 +130,11 @@ public class UseCaseConfig {
     @Bean
     ObtenerPerfil obtenerPerfil(UsuarioRepository usuarios) {
         return new ObtenerPerfil(usuarios);
+    }
+
+    @Bean
+    EditarPerfil editarPerfil(ObtenerPerfil perfil, UsuarioRepository usuarios) {
+        return new EditarPerfil(perfil, usuarios);
     }
 
     @Bean

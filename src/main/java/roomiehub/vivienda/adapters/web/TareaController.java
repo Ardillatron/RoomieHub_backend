@@ -40,15 +40,19 @@ import roomiehub.vivienda.domain.model.tareas.Tarea;
 @RestController
 public class TareaController {
 
-    public record CrearTareaRequest(@NotBlank @Size(max = 80) String nombre, @NotNull @Min(1) @Max(10) Integer valor,
-                                    @NotNull Frecuencia frecuencia, @NotNull LocalDate fechaInicio) {}
+    /** {@code frecuencia}: periodo ISO-8601, cada N días (P1D a P365D) o cada mes (P1M). */
+    public record CrearTareaRequest(@NotBlank @Size(max = 80) String nombre, @Size(max = 500) String descripcion,
+                                    @NotNull @Min(1) @Max(10) Integer valor, @NotBlank String frecuencia,
+                                    @NotNull LocalDate fechaInicio) {}
 
     public record EditarTareaRequest(@NotBlank @Size(max = 80) String nombre, @NotNull @Min(1) @Max(10) Integer valor,
-                                     @NotNull Frecuencia frecuencia) {}
+                                     @NotBlank String frecuencia) {}
 
-    public record TareaResponse(long id, String nombre, int valor, Frecuencia frecuencia, LocalDate fechaInicio) {
+    public record TareaResponse(long id, String nombre, String descripcion, int valor, String frecuencia,
+                                LocalDate fechaInicio) {
         static TareaResponse de(Tarea t) {
-            return new TareaResponse(t.id(), t.nombre(), t.valor().valor(), t.frecuencia(), t.fechaInicio());
+            return new TareaResponse(t.id(), t.nombre(), t.descripcion(), t.valor().valor(), t.frecuencia().toString(),
+                    t.fechaInicio());
         }
     }
 
@@ -90,7 +94,7 @@ public class TareaController {
     @ResponseStatus(HttpStatus.CREATED)
     public TareaResponse crear(@AuthenticationPrincipal Jwt jwt, @PathVariable long salaId,
                                @Valid @RequestBody CrearTareaRequest r) {
-        return TareaResponse.de(crearTarea.ejecutar(usuario(jwt), salaId, r.nombre(), r.valor(), r.frecuencia(),
+        return TareaResponse.de(crearTarea.ejecutar(usuario(jwt), salaId, r.nombre(), r.descripcion(), r.valor(), Frecuencia.de(r.frecuencia()),
                 r.fechaInicio()));
     }
 
@@ -98,7 +102,7 @@ public class TareaController {
     public TareaResponse editar(@AuthenticationPrincipal Jwt jwt, @PathVariable long salaId, @PathVariable long tareaId,
                                 @Valid @RequestBody EditarTareaRequest r) {
         return TareaResponse.de(editarTarea.ejecutar(usuario(jwt), salaId, tareaId, r.nombre(), r.valor(),
-                r.frecuencia()));
+                Frecuencia.de(r.frecuencia())));
     }
 
     @DeleteMapping("/salas/{salaId}/tareas/{tareaId}")

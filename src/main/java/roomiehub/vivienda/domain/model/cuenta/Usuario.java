@@ -66,6 +66,10 @@ public final class Usuario {
         eliminadoEn = Objects.requireNonNull(ahora, "ahora");
     }
 
+    public void renombrar(String nombre) {
+        this.nombre = validarNombre(nombre);
+    }
+
     public boolean tieneContrasena() {
         return passwordHash != null;
     }

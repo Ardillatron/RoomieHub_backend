@@ -22,9 +22,9 @@ public class CrearTarea {
     }
 
     @Transactional
-    public Tarea ejecutar(long adminId, long salaId, String nombre, int valor, Frecuencia frecuencia,
+    public Tarea ejecutar(long adminId, long salaId, String nombre, String descripcion, int valor, Frecuencia frecuencia,
                           LocalDate fechaInicio) {
         acceso.exigirAdministradorDeSalaActiva(salaId, adminId);
-        return tareas.guardar(Tarea.nueva(salaId, nombre, new ValorTarea(valor), frecuencia, fechaInicio));
+        return tareas.guardar(Tarea.nueva(salaId, nombre, descripcion, new ValorTarea(valor), frecuencia, fechaInicio));
     }
 }

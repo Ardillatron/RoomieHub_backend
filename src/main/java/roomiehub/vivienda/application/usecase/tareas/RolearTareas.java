@@ -2,7 +2,7 @@ package roomiehub.vivienda.application.usecase.tareas;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,7 +60,7 @@ public class RolearTareas {
             return;
         }
         // Cada frecuencia tiene su propio roleo, y todos leen el mismo histórico (sección 6).
-        Map<Frecuencia, List<PorRolear>> porFrecuencia = new EnumMap<>(Frecuencia.class);
+        Map<Frecuencia, List<PorRolear>> porFrecuencia = new LinkedHashMap<>();
         for (Tarea tarea : tareas.activasDeSala(salaId)) {
             tarea.periodoEn(ahora, sala.zonaHoraria())
                     .filter(p -> !asignaciones.existe(tarea.id(), p.inicio()))

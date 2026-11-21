@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: roomiehub-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      # Supabase: usar el Session pooler (Render no tiene IPv6). Usuario = rol.<project-ref>
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_OWNER_USER
+        sync: false
+      - key: DB_OWNER_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JOBS_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_IDS
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: FIREBASE_CREDENTIALS
+        value: /etc/secrets/firebase.json

@@ -60,11 +60,12 @@ class TareasIntegrationTest {
         }
 
         // ─── CU-16: solo la Administradora crea tareas ───
-        crearTarea(beto, sala, "Barrer", 5, "SEMANAL").andExpect(status().isForbidden());
-        long banos = id(crearTarea(ana, sala, "Lavar baños", 8, "SEMANAL").andExpect(status().isCreated()));
-        long barrer = id(crearTarea(ana, sala, "Barrer", 5, "SEMANAL"));
-        long basura = id(crearTarea(ana, sala, "Sacar basura", 3, "DIARIA"));
-        crearTarea(ana, sala, "Imposible", 11, "SEMANAL").andExpect(status().isBadRequest());
+        crearTarea(beto, sala, "Barrer", 5, "P7D").andExpect(status().isForbidden());
+        long banos = id(crearTarea(ana, sala, "Lavar baños", 8, "P7D").andExpect(status().isCreated()));
+        long barrer = id(crearTarea(ana, sala, "Barrer", 5, "P7D"));
+        long basura = id(crearTarea(ana, sala, "Sacar basura", 3, "P1D"));
+        crearTarea(ana, sala, "Imposible", 11, "P7D").andExpect(status().isBadRequest());
+        crearTarea(ana, sala, "Cada 400 días", 5, "P400D").andExpect(status().isBadRequest());
         como(carla, get("/salas/{id}/tareas", sala), null).andExpect(jsonPath("$.length()").value(3));
 
         // ─── CU-23: el disparador externo rolea; repetirlo no duplica nada ───
@@ -94,16 +95,16 @@ class TareasIntegrationTest {
 
         // ─── RN-12: editar el valor no cambia la asignación ya creada ───
         como(ana, put("/salas/{s}/tareas/{t}", sala, banos),
-                "{\"nombre\":\"Lavar baños\",\"valor\":9,\"frecuencia\":\"SEMANAL\"}")
+                "{\"nombre\":\"Lavar baños\",\"valor\":9,\"frecuencia\":\"P7D\"}")
                 .andExpect(status().isOk()).andExpect(jsonPath("$.valor").value(9));
         assertEquals(8, de(asignaciones(ana, sala), banos).get("valor"));
 
         // ─── Cambiar la frecuencia: la nueva empieza cuando cierra la semana en curso, sin empalmarse ───
         String finDeSemana = LocalDate.parse(hoy).plusDays(7).toString();
         como(ana, put("/salas/{s}/tareas/{t}", sala, barrer),
-                "{\"nombre\":\"Barrer\",\"valor\":5,\"frecuencia\":\"DIARIA\"}")
+                "{\"nombre\":\"Barrer\",\"valor\":5,\"frecuencia\":\"P1D\"}")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.frecuencia").value("DIARIA"))
+                .andExpect(jsonPath("$.frecuencia").value("P1D"))
                 .andExpect(jsonPath("$.fechaInicio").value(finDeSemana));
         jobs("secreto-de-prueba").andExpect(status().isNoContent());
         assertEquals(1, asignaciones(ana, sala).stream()

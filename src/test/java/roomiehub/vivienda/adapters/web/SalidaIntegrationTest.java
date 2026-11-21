@@ -82,7 +82,7 @@ class SalidaIntegrationTest {
                     ids[2], sala, beto.id());
             long tarea = jdbc.queryForObject("""
                     INSERT INTO tareas (sala_id, nombre, valor, frecuencia, fecha_inicio)
-                    VALUES (?, 'Lavar baños', 8, 'SEMANAL', '2026-11-02') RETURNING id""", Long.class, sala);
+                    VALUES (?, 'Lavar baños', 8, 'P7D', '2026-11-02') RETURNING id""", Long.class, sala);
             jdbc.update("""
                     INSERT INTO tarea_asignaciones (tarea_id, sala_id, usuario_id, periodo_inicio, periodo_fin, valor_al_asignar)
                     VALUES (?, ?, ?, now(), now() + interval '7 days', 8)""", tarea, sala, ana.id());

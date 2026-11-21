@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import roomiehub.vivienda.domain.exception.ConflictoDeEstadoException;
 import roomiehub.vivienda.domain.exception.DatoInvalidoException;
 import roomiehub.vivienda.domain.exception.DeudaCerradaException;
 import roomiehub.vivienda.domain.exception.OperacionNoPermitidaException;
@@ -36,12 +37,14 @@ class DeudaTest {
     }
 
     @Test
-    void lasConfirmacionesCuentanAunqueElDeudorNoHayaAvisado() {
+    void nadieConfirmaAntesDeQueElDeudorAvise() {
         Deuda d = deudaDeAna();
+        assertThrows(ConflictoDeEstadoException.class, () -> d.confirmar(BETO, TODOS));
+        assertEquals(Set.of(), d.confirmadores());
+        d.avisarPago(AHORA, TODOS);
         d.confirmar(DIEGO, TODOS);
         d.confirmar(BETO, TODOS);
-        assertTrue(d.confirmar(CARLA, TODOS));
-        assertEquals(null, d.avisoPagoEn());
+        assertTrue(d.confirmar(CARLA, TODOS), "después del aviso, en cualquier orden");
     }
 
     @Test
@@ -54,6 +57,7 @@ class DeudaTest {
     @Test
     void siAlguienSaleYYaReuneLasConfirmacionesSeAprueba() {
         Deuda d = deudaDeAna();
+        d.avisarPago(AHORA, TODOS);
         d.confirmar(BETO, TODOS);
         d.confirmar(CARLA, TODOS);
         assertTrue(d.reevaluar(Set.of(ANA, BETO, CARLA)), "Diego salió");

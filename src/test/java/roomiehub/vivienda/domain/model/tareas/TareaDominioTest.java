@@ -26,11 +26,39 @@ class TareaDominioTest {
     static final long ANA = 1, BETO = 2;
 
     static Tarea banos() {
-        return new Tarea(10L, 5, "Lavar baños", new ValorTarea(8), Frecuencia.SEMANAL, LocalDate.of(2026, 11, 2), true);
+        return new Tarea(10L, 5, "Lavar baños", null, new ValorTarea(8), Frecuencia.SEMANAL, LocalDate.of(2026, 11, 2), true);
     }
 
     static AsignacionTarea asignadaA(Long usuario) {
         return AsignacionTarea.nueva(banos(), new Periodo(0, INICIO, FIN), usuario);
+    }
+
+    @Test
+    void frecuenciaCadaNDiasOCadaMes() {
+        assertEquals(Frecuencia.SEMANAL, Frecuencia.de("P1W"));
+        assertEquals("P5D", Frecuencia.cadaDias(5).toString());
+        assertEquals(Frecuencia.MENSUAL, Frecuencia.de("P1M"));
+        for (String invalida : new String[] {"P0D", "P366D", "P2M", "P1Y", "P1M1D", "SEMANAL"}) {
+            assertThrows(DatoInvalidoException.class, () -> Frecuencia.de(invalida), invalida);
+        }
+    }
+
+    @Test
+    void cadaCincoDiasEmpiezaUnPeriodoNuevoCadaCincoDias() {
+        Tarea t = new Tarea(11L, 5, "Regar", "  ", new ValorTarea(2), Frecuencia.cadaDias(5), LocalDate.of(2026, 11, 2), true);
+        assertEquals(null, t.descripcion(), "en blanco es sin descripción");
+        Periodo segundo = t.periodoEn(INICIO.plus(Duration.ofDays(6)), CDMX).orElseThrow();
+        assertEquals(INICIO.plus(Duration.ofDays(5)), segundo.inicio());
+        assertEquals(INICIO.plus(Duration.ofDays(10)), segundo.fin());
+    }
+
+    @Test
+    void laDescripcionEsOpcionalYCorta() {
+        Tarea t = new Tarea(12L, 5, "Trapear", "  Con el trapeador azul  ", new ValorTarea(3), Frecuencia.SEMANAL,
+                LocalDate.of(2026, 11, 2), true);
+        assertEquals("Con el trapeador azul", t.descripcion());
+        assertThrows(DatoInvalidoException.class, () -> new Tarea(13L, 5, "Trapear", "x".repeat(501), new ValorTarea(3),
+                Frecuencia.SEMANAL, LocalDate.of(2026, 11, 2), true));
     }
 
     @Test

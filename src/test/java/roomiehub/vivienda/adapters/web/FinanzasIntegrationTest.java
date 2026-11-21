@@ -92,12 +92,14 @@ class FinanzasIntegrationTest {
                 "SELECT count(*) FROM confirmaciones_pago WHERE deuda_id = ?", Long.class, deBeto)));
         assertEquals(1, deudas(ana, sala, "APROBADA").size());
 
-        // ─── Gasto único entre dos: basta la confirmación del otro, aunque no haya aviso ───
+        // ─── Gasto único entre dos: basta la confirmación del otro, pero solo después del aviso ───
         long pizza = id(crearGasto(ana, sala, "Pizza", "300", "UNICA", hoy, List.of(ana, beto)));
         List<Map<String, Object>> dePizza = deudas(ana, sala, "PENDIENTE").stream()
                 .filter(d -> "Pizza".equals(d.get("concepto"))).toList();
         assertEquals(List.of("150.00", "150.00"), dePizza.stream().map(d -> (String) d.get("monto")).toList());
         long pizzaDeAna = deudaDe(dePizza, ana, null), pizzaDeBeto = deudaDe(dePizza, beto, null);
+        como(beto, post("/deudas/{id}/confirmaciones", pizzaDeAna), null).andExpect(status().isConflict());
+        como(ana, post("/deudas/{id}/aviso", pizzaDeAna), null).andExpect(status().isOk());
         como(beto, post("/deudas/{id}/confirmaciones", pizzaDeAna), null)
                 .andExpect(jsonPath("$.estado").value("APROBADA"));
 
@@ -112,6 +114,7 @@ class FinanzasIntegrationTest {
                         .formatted(ana.id(), beto.id()))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.monto").value("120.00"));
         assertEquals("33.33", monto(ana, anaDelMesActual), "las deudas ya generadas conservan su monto");
+        como(ana, post("/deudas/{id}/aviso", anaDelMesActual), null).andExpect(status().isOk());
         como(beto, post("/deudas/{id}/confirmaciones", anaDelMesActual), null)
                 .andExpect(jsonPath("$.estado").value("APROBADA"));
         como(carla, get("/salas/{id}/gastos", sala), null)

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import roomiehub.vivienda.domain.model.tareas.EstadoAsignacion;
+import roomiehub.vivienda.domain.model.tareas.Frecuencia;
 import roomiehub.vivienda.domain.model.tareas.Tarea;
 import roomiehub.vivienda.domain.model.tareas.ValorTarea;
 import roomiehub.vivienda.domain.repository.TareaRepository;
@@ -30,8 +31,9 @@ public class JpaTareaRepositoryAdapter implements TareaRepository {
         e.setId(t.id());
         e.setSalaId(t.salaId());
         e.setNombre(t.nombre());
+        e.setDescripcion(t.descripcion());
         e.setValor((short) t.valor().valor());
-        e.setFrecuencia(t.frecuencia());
+        e.setFrecuencia(t.frecuencia().toString());
         e.setFechaInicio(t.fechaInicio());
         e.setActiva(t.activa());
         return aDominio(tareas.saveAndFlush(e));
@@ -59,7 +61,8 @@ public class JpaTareaRepositoryAdapter implements TareaRepository {
     }
 
     private static Tarea aDominio(TareaJpaEntity e) {
-        return new Tarea(e.getId(), e.getSalaId(), e.getNombre(), new ValorTarea(e.getValor()), e.getFrecuencia(),
+        return new Tarea(e.getId(), e.getSalaId(), e.getNombre(), e.getDescripcion(), new ValorTarea(e.getValor()),
+                Frecuencia.de(e.getFrecuencia()),
                 e.getFechaInicio(), e.isActiva());
     }
 }

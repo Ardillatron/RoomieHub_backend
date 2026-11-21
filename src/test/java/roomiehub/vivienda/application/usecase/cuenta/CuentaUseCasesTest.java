@@ -139,6 +139,16 @@ class CuentaUseCasesTest {
     }
 
     @Test
+    void editarPerfilCambiaElNombreConLasMismasReglas() {
+        long id = registrar.ejecutar("ana@mail.com", "secreta123", "Ana", null).usuario().id();
+        EditarPerfil editar = new EditarPerfil(new ObtenerPerfil(usuarios), usuarios);
+
+        assertEquals("Ana María", editar.ejecutar(id, "  Ana María ").nombre());
+        assertEquals("Ana María", usuarios.buscarPorId(id).orElseThrow().nombre());
+        assertThrows(DatoInvalidoException.class, () -> editar.ejecutar(id, " "));
+    }
+
+    @Test
     void cerrarSesionRevocaYToleraTokensDesconocidos() {
         Sesion s = registrar.ejecutar("ana@mail.com", "secreta123", "Ana", null);
         tokensPush.addAll(List.of("fcm-de-ana", "fcm-de-otro"));

@@ -8,12 +8,14 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import roomiehub.vivienda.domain.exception.ConflictoDeEstadoException;
 import roomiehub.vivienda.domain.exception.DeudaCerradaException;
 import roomiehub.vivienda.domain.exception.OperacionNoPermitidaException;
 
 /**
  * RN-26: la deuda se aprueba cuando todos los demás participantes activos del gasto confirman,
- * en cualquier orden. Si no queda ningún otro participante, se aprueba al avisar.
+ * en cualquier orden, después de que el deudor avise que pagó. Si no queda ningún otro participante,
+ * se aprueba al avisar.
  * Aprobada y Repartida (RN-08) son finales.
  */
 public final class Deuda {
@@ -83,6 +85,9 @@ public final class Deuda {
         }
         if (!participantesActivos.contains(confirmadorId)) {
             throw new OperacionNoPermitidaException("Solo un participante activo del gasto puede confirmar");
+        }
+        if (avisoPagoEn == null) {
+            throw new ConflictoDeEstadoException("Espera a que avise que pagó para confirmarlo");
         }
         confirmadores.add(confirmadorId);
         return reevaluar(participantesActivos);

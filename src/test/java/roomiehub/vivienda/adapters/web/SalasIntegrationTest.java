@@ -55,7 +55,7 @@ class SalasIntegrationTest {
         // RN-18: Ana ya tiene 12 puntos y hay una tarea de valor 8
         sql(ana, () -> {
             jdbc.update("INSERT INTO tareas (sala_id, nombre, valor, frecuencia, fecha_inicio) "
-                    + "VALUES (?, 'Lavar baños', 8, 'SEMANAL', '2026-11-02')", sala);
+                    + "VALUES (?, 'Lavar baños', 8, 'P7D', '2026-11-02')", sala);
             return jdbc.update("INSERT INTO movimientos_puntos (usuario_id, sala_id, puntos, tipo) "
                     + "VALUES (?, ?, 12, 'INICIAL')", ana.id(), sala);
         });

@@ -57,9 +57,11 @@ class SyncIntegrationTest {
         gasto(ana, sala, "Internet", "MENSUAL", ana, beto);
         List<Map<String, Object>> deudas = JsonPath.read(cuerpo(como(ana, get("/salas/{id}/deudas", sala), null)), "$");
         long deBeto = deudaDe(deudas, beto, "Internet"), deAna = deudaDe(deudas, ana, "Internet");
+        // Beto solo confirma lo que Ana ya avisó que pagó.
+        como(ana, post("/deudas/{id}/aviso", deAna), null).andExpect(status().isOk());
 
         long tarea = id(como(ana, post("/salas/{id}/tareas", sala), """
-                {"nombre":"Barrer","valor":5,"frecuencia":"SEMANAL","fechaInicio":"%s"}""".formatted(hoy.plusDays(1))));
+                {"nombre":"Barrer","valor":5,"frecuencia":"P7D","fechaInicio":"%s"}""".formatted(hoy.plusDays(1))));
         long abierta = asignacion(ana, tarea, sala, beto, "1 hour", "-5 hours");
         long vencida = asignacion(ana, tarea, sala, beto, "8 days", "4 hours");
 
