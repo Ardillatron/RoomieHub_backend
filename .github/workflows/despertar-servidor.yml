@@ -5,7 +5,8 @@ name: Despertar servidor
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    # Cada 14 minutos para ganarle a los 15 de inactividad con los que Render lo duerme
+    - cron: "*/14 * * * *"
   workflow_dispatch:
 
 jobs:
