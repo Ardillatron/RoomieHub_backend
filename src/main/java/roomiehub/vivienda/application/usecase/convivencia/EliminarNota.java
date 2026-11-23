@@ -6,7 +6,7 @@ import roomiehub.vivienda.application.usecase.sala.AccesoASala;
 import roomiehub.vivienda.domain.model.convivencia.Nota;
 import roomiehub.vivienda.domain.repository.NotaRepository;
 
-// CU-13 solo el admin borra la nota y sus reportes se quedan
+// CU-13 el admin o quien la escribio borra la nota y sus reportes se quedan
 public class EliminarNota {
 
     private final AccesoASala acceso;
@@ -18,9 +18,13 @@ public class EliminarNota {
     }
 
     @Transactional
-    public void ejecutar(long adminId, long notaId) {
+    public void ejecutar(long usuarioId, long notaId) {
         Nota nota = ReaccionarNota.notaVisible(notas, notaId);
-        acceso.exigirAdministradorDeSalaActiva(nota.salaId(), adminId);
+        if (nota.autorId() == usuarioId) {
+            acceso.exigirMiembroDeSalaActiva(nota.salaId(), usuarioId);
+        } else {
+            acceso.exigirAdministradorDeSalaActiva(nota.salaId(), usuarioId);
+        }
         nota.eliminar();
         notas.guardar(nota);
     }

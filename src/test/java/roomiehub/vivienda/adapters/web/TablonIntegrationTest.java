@@ -111,9 +111,11 @@ class TablonIntegrationTest {
         como(ana, post("/reportes/{id}/resolver", reporte), null).andExpect(status().isConflict());
         como(ana, get("/salas/{id}/reportes", sala), null).andExpect(jsonPath("$.length()").value(0));
 
-        // CU-13 solo la admin y una nota borrada ya no acepta nada
+        // CU-13 la admin o quien la escribio y una nota borrada ya no acepta nada
         como(beto, delete("/notas/{id}", tercera), null).andExpect(status().isForbidden());
         como(ana, delete("/notas/{id}", tercera), null).andExpect(status().isNoContent());
+        como(beto, delete("/notas/{id}", segunda), null).andExpect(status().isForbidden());
+        como(carla, delete("/notas/{id}", segunda), null).andExpect(status().isNoContent());
         reaccionSinEsperar(beto, tercera, "LIKE").andExpect(status().isNotFound());
         como(beto, get("/salas/{id}/notas", sala), null).andExpect(jsonPath("$.fijadas.length()").value(1));
 
