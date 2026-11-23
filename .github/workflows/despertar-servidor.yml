@@ -1,0 +1,23 @@
+# Disparador externo de los procesos programados (ADR-018).
+# Render duerme el servidor sin visitas; esto lo despierta y corre repartos, cobros y recordatorios.
+# Requiere el secreto del repo JOBS_SECRET con el mismo valor que la variable JOBS_SECRET de Render.
+name: Despertar servidor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ejecutar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Llamar a /internal/jobs/ejecutar
+        env:
+          JOBS_SECRET: ${{ secrets.JOBS_SECRET }}
+        run: |
+          # El primer intento puede tardar ~2 minutos mientras Render despierta
+          curl --fail-with-body --silent --show-error --max-time 200 \
+            -X POST -H "X-Jobs-Secret: $JOBS_SECRET" \
+            https://roomiehub-backend-mvg4.onrender.com/internal/jobs/ejecutar
