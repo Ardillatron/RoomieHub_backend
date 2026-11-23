@@ -1,133 +1,56 @@
-=
-**PARTE 1. Identificar el núcleo**
-=
+# RoomieHub · Backend
 
+App móvil para viviendas compartidas: reparte los quehaceres de forma equilibrada según el esfuerzo acumulado
+de cada roomie y lleva un registro inmutable de los gastos compartidos y de quién confirmó cada pago.
+Este repositorio es la API; la app Flutter está en [Ardillatron/Frontonend](https://github.com/Ardillatron/Frontonend).
 
-Regla 1: La capacidad de una vivienda está limitada a un máximo de 6 personas
+## Equipo
 
+Equipo **Mamut y Paput**
 
-Por qué es negocio: Es una política inquebrantable del sistema de convivencia que debe cumplirse obligatoriamente independientemente de si se utiliza PostgreSQL, un archivo de texto.
+- Josué Isaac Palacios Aguado — 333351 — Backend (Spring Boot), app Flutter, despliegue
+- Isaías Rangel Ledezma — 333318 — Requerimientos, reglas de negocio, ADRs y pruebas
 
-Entidades involucradas: Sala (atributos: ID, nombre, código de acceso) y UsuarioSala (atributos: usuario_id, sala_id, rol).
+## Stack
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Java 17 + Spring Boot 4 (Web, Security, Data JPA, WebSocket/STOMP)
+- PostgreSQL 16 con Row-Level Security y migraciones Flyway
+- JWT propio + Google Sign-In, Firebase Cloud Messaging (push), Cloudinary (imágenes)
+- App móvil: Flutter (Android e iOS)
+- Despliegue: Docker en Render + PostgreSQL en Supabase
 
-Regla 2: Las tareas tendrán un valor numérico estricto de 1 a 10 de acuerdo a la dificultad.
+## Arquitectura
 
+![Diagrama](docs/arquitectura.png)
 
-Por qué es negocio: Define la lógica matemática para evaluar equitativamente el esfuerzo dentro de la casa, por lo que es una restricción pura que no depende de la interfaz de usuario ni del framework.
+Clean Architecture en 4 capas; las dependencias apuntan hacia el dominio. Todo vive en `src/main/java/roomiehub/vivienda/`:
 
-Entidades involucradas: Tarea (atributos: titulo, puntos_dificultad, estado actual).
+| Capa | Carpeta | Contenido |
+|---|---|---|
+| Entities / Domain | `domain/` | Entidades y value objects (`Sala`, `Deuda`, `Dinero`), servicios de dominio (`AsignadorDeTareas`, `CalculadoraDeReparto`), interfaces de repositorio y excepciones. Java puro: sin Spring ni JPA. |
+| Use Cases | `application/` | Una clase por caso de uso (`usecase/finanzas/ConfirmarPago` = CU-22) y puertos de servicios externos (`port/NotificadorPort`). |
+| Interface Adapters | `adapters/` | Controllers REST y DTOs (`web/`), procesos programados (`scheduler/`) y `Jpa*RepositoryAdapter` que implementan las interfaces del dominio (`persistence/`). |
+| Frameworks & Drivers | `infrastructure/` | Entidades JPA y Spring Data, seguridad (JWT, aspecto RLS), Firebase, Cloudinary y `UseCaseConfig` (raíz de composición). |
 
+## Cómo correrlo
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------
+1. Requisitos: JDK 17, PostgreSQL 16 o posterior (o Docker). Maven viene incluido (`mvnw`).
+2. Crea los roles y la base una vez, como superusuario:
+   `psql -U postgres -v owner_pw="'...'" -v app_pw="'...'" -f db/roles.sql`
+3. Configura los secretos: `cp .env.example .env` (para Docker) o `cp local.properties.example local.properties`
+   (para correr local; Spring lo lee solo). Llena al menos `DB_PASSWORD`, `DB_OWNER_PASSWORD` y `JWT_SECRET`.
+4. Arranca la API (Flyway crea el esquema al iniciar):
+   - Local: `./mvnw spring-boot:run`
+   - Docker: `docker build -t roomiehub . && docker run --env-file .env -p 8080:8080 roomiehub`
+5. Verifica: `curl http://localhost:8080/actuator/health` → `{"status":"UP"}`
+6. Pruebas:
+   - Unitarias (dominio y casos de uso, sin base de datos): `./mvnw test`
+   - Integración con PostgreSQL real (RLS, endpoints): `./mvnw test -Ddb=true`
 
-Regla 3: Una deuda no se liquida hasta que todos los involucrados confirmen la recepción del pago.
+Producción: <https://roomiehub-backend-mvg4.onrender.com> (plan gratuito: la primera petición tras inactividad tarda ~1 min).
 
+## Documentación
 
-Por qué es negocio: Previene fraudes en el hogar y rige la máquina de estados contable; esta validación por consenso existe sin importar si la base de datos está en línea o en modo offline.
-
-Entidades involucradas: DeudaUsuario (atributos: monto real de la deuda, estado de la transacción).
-
-
-
-
- 
-=
-**PARTE 2. Diseño por capas**
-=
-
-Regla 1: La capacidad de una vivienda está limitada a un máximo de 6 personas
-La Entity con sus validaciones:
-La entidad es Sala. Tendrá una validación interna (un método como validarCapacidad()) que se asegure de que la lista de UsuarioSala asociadas a esa sala no
-tenga un tamaño mayor a 6. Si es mayor o igual a 6 y se intenta agregar uno más, la entidad arroja una excepción
-
-El Use Case que la ejecuta:
-El Use Case es UnirseASalaUseCase.
-
-Entrada: usuarioId y codigoAcceso.
-
-Salida: Confirmación de éxito o un mensaje de error.
-
-Pasos: 
-1) Usar el repositorio para buscar la Sala por el código de acceso. 
-2) La sala verifica su capacidad (Regla 1). 
-3) Si hay lugar, se crea el vínculo UsuarioSala asignando el rol de INTEGRANTE.
-4) 4) Usar el repositorio para guardar los cambios en la base de datos.
-
-La interfaz del Repository:
-ISalaRepository. Necesitará los métodos buscarPorCodigoAcceso y guardar.
-
-El Adapter que la implementaría:
-Un adaptador de base de datos. Específicamente, PostgresSalaAdapter que se conecta a PostgreSQL para ejecutar las consultas reales.
-
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------
-Regla 2: Las tareas tendrán un valor numérico estricto de 1 a 10 (BR-03)
-La Entity con sus validaciones:
-La entidad es Tarea. En su constructor, o en el método setPuntosDificultad(), tendrá la validación: if (puntos < 1 || puntos > 10) throw new IllegalArgumentException("Los puntos deben estar entre 1 y 10").
-
-El Use Case que la ejecuta:
-El Use Case es CrearTareaUseCase (CU-08).
-
-Entrada: salaId, creadorId (Master), titulo, y puntosDificultad.
-
-Salida: La nueva Tarea creada o un error de validación.
-
-Pasos: 
-1) Validar que el creador sea Administrador. 
-2) Instanciar la entidad Tarea, pasándole los datos. La entidad validará automáticamente la regla de los puntos. 
-3) Usar el repositorio para guardar la tarea.
-
-La interfaz del Repository:
-ITareaRepository. Necesitará el método guardarTarea.
-
-El Adapter que la implementaría:
-Igual que el anterior, un adaptador de BD  usando Spring Data JPA para insertar el registro en la tabla tareas.
-
-
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------
-Regla 3: El sistema impone un máximo de 2 salas creadas por usuario 
-La Entity con sus validaciones:
-La entidad es Usuario. Tendrá un método como puedeCrearSala() que revisará cuántas salas tiene actualmente con el rol MASTER. Si el conteo es 2, arroja un error.
-
-El Use Case que la ejecuta:
-El Use Case es CrearNuevaSalaUseCase.
-
-Entrada: usuarioId y nombreSala.
-
-Salida: Los datos de la nueva Sala (incluyendo su código generado).
-
-Pasos: 
-1) Obtener al Usuario a través del repositorio.
-2) 2) Validar si el usuario puede crear una sala más (Regla 3).
-3) Generar el código de acceso único.
-4) Instanciar la nueva Sala.
-5) Crear la relación UsuarioSala como MASTER.
-6) Guardar todo a través de los repositorios.
-
-La interfaz del Repository:
-Se necesitan dos: IUsuarioRepository (para traer al usuario y sus salas) y ISalaRepository (para guardar la nueva sala y el código generado). 
-Podría haber un método como contarSalasDeUsuario(Long usuarioId).
-
-El Adapter que la implementaría:
-Un adaptador de BD conectado a PostgreSQL.
-
-
-=
-**PARTE 5. Cierre**
-=
-
-• ¿Qué parte de su proyecto les costó más ubicar en una capa?
-
-cualquiera de dominio ya que se sentia como que si la ubicabas mal en una subcarpeta podrias terminar muy enredado, de hecho ni siquiera estoy seguro de que las este 
-acomodando bien tbh
-
-• ¿Qué ganan con poder cambiar la infraestructura sin tocar el núcleo?
-Si una tecnología queda obsoleta en el futuro, el núcleo del negocio permanece intacto.
-Los cambios tecnológicos se limitan estrictamente a la capa más reduciendo el riesgo de que una actualización 
-rompa las reglas contables o de convivencia de las viviendas compartidas.
-
-<img width="2746" height="4190" alt="Christmas Shopping Decision Tree-2026-10-15-043011" src="https://github.com/user-attachments/assets/8e016cf7-168b-430e-a485-5f196470c3da" />
-
+- Diagrama: [`docs/arquitectura.png`](docs/arquitectura.png) ([SVG](docs/arquitectura.svg))
+- ADRs: [`docs/adr/`](docs/adr/)
+- Video: PENDIENTE
