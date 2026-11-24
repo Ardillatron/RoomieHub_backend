@@ -53,4 +53,4 @@ Producción: <https://roomiehub-backend-mvg4.onrender.com> (plan gratuito: la pr
 
 - Diagrama: [`docs/arquitectura.png`](docs/arquitectura.png)
 - ADRs: [`docs/adr/`](docs/adr/)
-- Video: PENDIENTE
+- Video: <https://drive.google.com/file/d/15vrssXusTGVNEbj3qFnpFsUEp_D7i7-l/view?usp=sharing>
