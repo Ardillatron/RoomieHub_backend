@@ -2,7 +2,7 @@
 
 App móvil para viviendas compartidas: reparte los quehaceres de forma equilibrada según el esfuerzo acumulado
 de cada roomie y lleva un registro inmutable de los gastos compartidos y de quién confirmó cada pago.
-Este repositorio es la API; la app Flutter está en [Ardillatron/Frontonend](https://github.com/Ardillatron/Frontonend).
+Este repositorio es la API; la app Flutter está en [THEconLECHE/Frontend](https://github.com/THEconLECHE/Frontend).
 
 ## Equipo
 
