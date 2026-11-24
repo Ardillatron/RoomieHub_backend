@@ -51,6 +51,6 @@ Producción: <https://roomiehub-backend-mvg4.onrender.com> (plan gratuito: la pr
 
 ## Documentación
 
-- Diagrama: [`docs/arquitectura.png`](docs/arquitectura.png) ([SVG](docs/arquitectura.svg))
+- Diagrama: [`docs/arquitectura.png`](docs/arquitectura.png)
 - ADRs: [`docs/adr/`](docs/adr/)
 - Video: PENDIENTE
