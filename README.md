@@ -21,7 +21,8 @@ Equipo **Mamut y Paput**
 
 ## Arquitectura
 
-![Diagrama](docs/arquitectura.png)
+![Diagrama](<img width="2460" height="1393" alt="arquitectura" src="https://github.com/user-attachments/assets/d8801e6a-0c8a-422d-9d47-fd2b642eb818" />
+)
 
 Clean Architecture en 4 capas; las dependencias apuntan hacia el dominio. Todo vive en `src/main/java/roomiehub/vivienda/`:
 
